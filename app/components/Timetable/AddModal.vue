@@ -82,7 +82,7 @@ const emits = defineEmits(["save"]);
 
 const closeDialog = (save: boolean) => {
   useSonner(save ? "Profile updated" : "Changes discarded", {
-    description: `Your changes has been ${save ? "saved" : "discarded"}.`,
+    description: `Your changes have been ${save ? "saved" : "discarded"}.`,
     duration: 7000,
   });
   dialog.value = false;

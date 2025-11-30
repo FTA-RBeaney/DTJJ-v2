@@ -85,6 +85,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useField } from "vee-validate";
 import { motion } from "motion-v";
 
 const variants = {
