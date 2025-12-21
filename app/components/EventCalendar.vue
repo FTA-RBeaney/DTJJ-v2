@@ -3,9 +3,6 @@
 </template>
 
 <script lang="ts" setup>
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import dayGridPlugin from "@fullcalendar/daygrid";
 import FullCalendar from "@fullcalendar/vue3";
 import dayjs from "dayjs";
 import type { CalendarOptions, EventInput } from "@fullcalendar/core";

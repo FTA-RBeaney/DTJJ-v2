@@ -72,7 +72,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Welcome",
-      titleTemplate: "%s - Nuxt 4 Starter Template",
+      titleTemplate: "%s - Downtown Jazz Jam",
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
     },
     rootAttrs: {
@@ -113,6 +113,12 @@ export default defineNuxtConfig({
           "https://randomuser.me",
         ],
       },
+    },
+  },
+
+  supabase: {
+    redirectOptions: {
+      exclude: ["*"],
     },
   },
 

@@ -275,16 +275,10 @@
 <script lang="ts" setup>
 import DTJJLogo from "@/assets/img/logo.png";
 const state = ref(true);
-
 const search = ref<string>("");
-const isExpanded = ref<boolean>(true);
-
 const sbUser = useSupabaseUser();
 const userStore = useUserStore();
 const { fetchProfile } = userStore;
-const { profile } = storeToRefs(userStore);
-
-console.log(sbUser.value);
 
 // Watch the Supabase auth user and fetch the profile when available
 watch(
@@ -300,15 +294,6 @@ watch(
 
 // Temporary company name constant (used in layout header)
 const COMPANY_NAME = "DTJJ";
-
-const user = computed(() => ({
-  avatar:
-    profile.value?.avatar_url ||
-    "https://randomuser.me/api/portraits/men/1.jpg",
-  username:
-    `${profile.value?.first_name || ""} ${profile.value?.last_name || ""}`.trim(),
-  role: profile.value?.role || "Product Manager",
-}));
 
 const navigation = [
   { title: "Overview", icon: "lucide:layout-dashboard", link: "#", badge: "3" },

@@ -282,7 +282,7 @@ const addEvent = (event: Event) => {
 </script>
 
 <template>
-  <Loader v-if="isLoading" />
+  <JamLoader v-if="isLoading" />
   <div v-else>
     <div class="flex justify-end px-6 py-4">
       <UiButton size="sm"><Icon name="lucide:plus" /> New event</UiButton>
@@ -290,7 +290,7 @@ const addEvent = (event: Event) => {
     <div class="w-full !max-w-full">
       <UiCard>
         <UiCardContent>
-          <Calendar />
+          <EventCalendar />
           <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold">Schedule</h1>
             <TimetableAddModal @save="addEvent" />

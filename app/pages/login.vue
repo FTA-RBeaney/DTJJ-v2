@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen items-center justify-between">
+  <div class="flex h-screen items-center justify-between bg-white">
     <div class="w-full md:w-1/2">
       <div class="mx-auto w-full max-w-[330px] px-5">
         <h1 class="text-2xl font-bold tracking-tight lg:text-3xl">Log in</h1>
@@ -7,7 +7,7 @@
           Enter your email & password to log in.
         </p>
 
-        <form class="mt-10" @submit="submit">
+        <form class="mt-10" @submit.prevent="signInWithEmail">
           <fieldset :disabled="isSubmitting" class="grid gap-5">
             <div>
               <UiVeeInput
@@ -17,11 +17,16 @@
                 placeholder="john@example.com"
               />
             </div>
-            <div>
+            <!-- <div>
               <UiVeeInput label="Password" type="password" name="password" />
-            </div>
+            </div> -->
             <div>
-              <UiButton class="w-full" type="submit" text="Log in" />
+              <UiButton
+                class="w-full"
+                type="submit"
+                text="Log in"
+                @click="signInWithEmail"
+              />
             </div>
             <UiDivider label="OR" />
             <UiButton
@@ -67,6 +72,10 @@
 import { object, string } from "yup";
 import type { InferType } from "yup";
 
+definePageMeta({
+  layout: "fullscreen",
+});
+
 useSeoMeta({
   title: "Log in",
   description: "Enter your email & password to log in.",
@@ -74,10 +83,10 @@ useSeoMeta({
 
 const LoginSchema = object({
   email: string().email().required().label("Email"),
-  password: string().required().label("Password").min(8),
+  // password: string().required().label("Password").min(8),
 });
 
-const { isSubmitting, handleSubmit } = useForm<InferType<typeof LoginSchema>>({
+const { isSubmitting } = useForm<InferType<typeof LoginSchema>>({
   validationSchema: LoginSchema,
 });
 
@@ -93,11 +102,7 @@ const signInWithOAuth = async () => {
   if (error) console.log(error);
 };
 
-// Provide a simple submit handler used by the template.
-// This uses the form handleSubmit wrapper so validation runs if configured.
-const submit = handleSubmit(async (values) => {
-  // TODO: implement actual sign-in using `values.email` and `values.password`.
-  // For now we'll just log the values to satisfy TypeScript and the template.
-  console.log("submit", values);
-});
+const signInWithEmail = async () => {
+  navigateTo("/account");
+};
 </script>

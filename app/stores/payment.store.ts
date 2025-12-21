@@ -1,18 +1,10 @@
 import { defineStore } from "pinia";
+import { PASS_TYPES } from "@/constants/registerOptions";
 
 export const usePaymentStore = defineStore("payment", () => {
   const exampleValue = ref("example");
 
-  const ticketTypes = [
-    {
-      name: "Full",
-      price: 200,
-    },
-    {
-      name: "Party",
-      price: 120,
-    },
-  ];
+  const ticketTypes = PASS_TYPES;
 
   // Persist and hydrate from localStorage after mount to survive reloads.
   // Default the chosen ticket to the 'Full' ticket when no value exists.
@@ -34,15 +26,15 @@ export const usePaymentStore = defineStore("payment", () => {
 
   const setChosenTicket = (ticket: string | null) => {
     if (ticket === null) {
-      chosenTicket.value = null;
+      chosenTicket.value = { label: "None", value: "none", price: 0, icon: "" };
       return;
     }
-    const foundTicket = ticketTypes.find((t) => t.name === ticket);
+    const foundTicket = ticketTypes.find((t) => t.value === ticket);
     if (!foundTicket) {
       throw new Error(`Ticket type "${ticket}" not found`);
     }
     console.log(
-      `Chosen ticket set to: ${foundTicket.name} at £${foundTicket.price}`
+      `Chosen ticket set to: ${foundTicket.value} at £${foundTicket.price}`
     );
     chosenTicket.value = foundTicket;
   };

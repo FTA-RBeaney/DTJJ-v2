@@ -38,8 +38,9 @@ export const useUserStore = defineStore("user", () => {
   const attendee = useLocalStorage(
     "user-attendee",
     {
+      pronouns: "",
       signedUp: "01-12-2025",
-      passType: "Full pass",
+      passType: "Full",
       role: "Lead",
       volunteering: false,
       hostingStatus: "Being hosted",

@@ -1,11 +1,12 @@
 <script setup>
 import JamLogo from "@/assets/img/jam.png";
-
 const nav = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Meet the Team", href: "/meet-the-team" },
-  { name: "Schedule", href: "/timetable" },
+  { name: "Values", href: "/values" },
+  { name: "Code of Conduct", href: "/code-of-conduct" },
+  // { name: "Schedule", href: "/timetable" },
   { name: "Register", href: "/register" },
   { name: "Account", href: "/account" },
   { name: "Admin", href: "/attendees" },
@@ -13,9 +14,6 @@ const nav = [
 
 // navbar scroll state: transparent at top, white when scrolled
 const scrolled = ref(false);
-function onScroll() {
-  scrolled.value = window.scrollY > 10;
-}
 
 // onMounted(() => {
 //   onScroll();
@@ -46,9 +44,9 @@ const navTransition = computed(() =>
 </script>
 
 <template>
-  <div class="min-h-screen overflow-hidden bg-[#fdf4ee]">
+  <div class="min-h-screen bg-[#fdf4ee]">
     <Motion
-      class="relative top-0 left-[15px] z-50 mx-auto mt-4"
+      class="relative top-0 left-0 z-50 mx-auto pt-6"
       :initial="{
         backgroundColor: 'rgba(255,255,255,0)',
         boxShadow: '0 0 0 rgba(0,0,0,0)',
@@ -56,7 +54,7 @@ const navTransition = computed(() =>
       :animate="navAnimate"
       :transition="navTransition"
     >
-      <UiContainer class="navbar !max-w-5xl">
+      <UiContainer class="navbar">
         <Motion
           class="absolute"
           :initial="{
@@ -74,7 +72,7 @@ const navTransition = computed(() =>
             transition: { duration: 0.5 },
           }"
         >
-          <NuxtLink to="/meet-the-team" class="block h-20">
+          <NuxtLink to="/" class="block h-20">
             <img :src="JamLogo" class="h-full object-cover" />
           </NuxtLink>
         </Motion>
@@ -97,8 +95,9 @@ const navTransition = computed(() =>
         </ul>
       </UiContainer>
     </Motion>
-    <UiContainer class="pt-4 pb-10">
+    <div class="mt-10">
       <slot />
-    </UiContainer>
+    </div>
+    <AppFooter />
   </div>
 </template>

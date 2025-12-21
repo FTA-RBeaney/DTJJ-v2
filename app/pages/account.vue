@@ -1,280 +1,285 @@
 <template>
-  <UiCard>
-    <UiCardContent>
-      <div v-if="user" class="m-4 md:mx-8">
-        <div class="hidden md:block">
-          <slot name="crumbs">
-            <UiBreadcrumbs v-if="crumbs" :items="crumbs" class="mb-5" />
+  <UiContainer class="!max-w-5xl">
+    <UiCard>
+      <UiCardContent>
+        <div v-if="user" class="m-4 md:mx-8">
+          <!-- <div class="hidden md:block">
+            <slot name="crumbs">
+              <UiBreadcrumbs v-if="crumbs" :items="crumbs" class="mb-5" />
+            </slot>
+          </div> -->
+          <slot name="back-link">
+            <NuxtLink
+              class="mb-5 flex items-center gap-3 text-sm underline-offset-2 hover:underline md:hidden"
+              to="#"
+            >
+              <Icon name="lucide:arrow-left" class="size-4" />
+              Back
+            </NuxtLink>
           </slot>
-        </div>
-        <slot name="back-link">
-          <NuxtLink
-            class="mb-5 flex items-center gap-3 text-sm underline-offset-2 hover:underline md:hidden"
-            to="#"
-          >
-            <Icon name="lucide:arrow-left" class="size-4" />
-            Back
-          </NuxtLink>
-        </slot>
-        <div
-          class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
-        >
-          <div class="flex items-center gap-5">
-            <slot name="avatar">
-              <UiAvatar
-                v-if="avatar"
-                :src="avatar"
-                class="size-8 object-cover md:size-10"
-              />
-            </slot>
-            <div class="flex flex-col gap-1">
-              <slot name="title">
-                <h1 v-if="name" class="leading-none font-bold lg:text-lg">
-                  {{ name }}
-                </h1>
-              </slot>
-              <slot name="description">
-                <p
-                  v-if="email"
-                  class="text-muted-foreground text-sm leading-none"
-                >
-                  {{ email }}
-                </p>
-              </slot>
-            </div>
-
-            <!-- Badges -->
-            <div class="flex items-center gap-2">
-              <!-- Team Badge -->
-              <UiTooltip>
-                <UiTooltipTrigger as-child>
-                  <div
-                    class="bg-muted flex size-8 items-center justify-center rounded-full"
-                  >
-                    <img :src="JamJar" class="size-5" />
-                  </div>
-                </UiTooltipTrigger>
-                <UiTooltipContent>
-                  <p>Team: {{ attendee.team }}</p>
-                </UiTooltipContent>
-              </UiTooltip>
-
-              <!-- Pass Type Badge -->
-              <UiTooltip>
-                <UiTooltipTrigger as-child>
-                  <div
-                    class="bg-muted text-muted-foreground flex size-8 items-center justify-center rounded-full"
-                  >
-                    <Icon name="lucide:ticket" class="size-5" />
-                  </div>
-                </UiTooltipTrigger>
-                <UiTooltipContent>
-                  <p>Pass: {{ attendee.passType }}</p>
-                </UiTooltipContent>
-              </UiTooltip>
-
-              <!-- Volunteer Badge -->
-              <UiTooltip v-if="attendee.volunteering">
-                <UiTooltipTrigger as-child>
-                  <div
-                    class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
-                  >
-                    <Icon name="lucide:hand-heart" class="size-5" />
-                  </div>
-                </UiTooltipTrigger>
-                <UiTooltipContent>
-                  <p>Volunteer</p>
-                </UiTooltipContent>
-              </UiTooltip>
-
-              <!-- Host Badge -->
-              <UiTooltip v-if="attendee.hostingStatus">
-                <UiTooltipTrigger as-child>
-                  <div
-                    class="flex size-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-                  >
-                    <Icon name="lucide:home" class="size-5" />
-                  </div>
-                </UiTooltipTrigger>
-                <UiTooltipContent>
-                  <p>Status: {{ attendee.hostingStatus }}</p>
-                </UiTooltipContent>
-              </UiTooltip>
-            </div>
-          </div>
-
           <div
-            class="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center"
+            class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
           >
-            <slot>
-              <UiDialog v-model:open="isEditProfileOpen">
-                <UiDialogTrigger as-child>
-                  <UiButton size="sm" variant="outline" text="Edit Profile" />
-                  <UiButton
-                    size="sm"
-                    variant="outline"
-                    text="Logout"
-                    @click="logout"
-                  />
-                </UiDialogTrigger>
-                <UiDialogContent>
-                  <UiDialogHeader class="contents space-y-0 text-left">
-                    <UiDialogTitle class="px-0 pt-0"
-                      >Edit Profile</UiDialogTitle
+            <div v-show="name" class="flex items-center gap-5">
+              <!-- <slot name="avatar">
+                <UiAvatar
+                  v-if="avatar"
+                  :src="avatar"
+                  class="size-8 object-cover md:size-10"
+                />
+              </slot> -->
+              <div class="flex flex-col gap-1">
+                <slot name="title">
+                  <h1 v-if="name" class="leading-none font-bold lg:text-lg">
+                    {{ name }}
+                  </h1>
+                </slot>
+                <slot name="description">
+                  <p
+                    v-if="email"
+                    class="text-muted-foreground text-sm leading-none"
+                  >
+                    {{ email }}
+                  </p>
+                </slot>
+              </div>
+
+              <!-- Badges -->
+              <div class="flex items-center gap-2">
+                <!-- Team Badge -->
+                <UiTooltip>
+                  <UiTooltipTrigger as-child>
+                    <div
+                      class="bg-muted flex size-8 items-center justify-center rounded-full"
                     >
+                      <img :src="JamJar" class="size-5" />
+                    </div>
+                  </UiTooltipTrigger>
+                  <UiTooltipContent>
+                    <p>Team: {{ attendee.team }}</p>
+                  </UiTooltipContent>
+                </UiTooltip>
 
-                    <form class="flex flex-col gap-4" @submit="updateProfile">
-                      <div class="grid grid-cols-2 gap-4">
-                        <UiVeeInput
-                          name="first_name"
-                          label="First Name"
-                          placeholder="Enter your first name"
-                        />
-                        <UiVeeInput
-                          name="last_name"
-                          label="Last Name"
-                          placeholder="Enter your last name"
-                        />
-                      </div>
+                <!-- Pass Type Badge -->
+                <UiTooltip>
+                  <UiTooltipTrigger as-child>
+                    <div
+                      class="bg-muted text-muted-foreground flex size-8 items-center justify-center rounded-full"
+                    >
+                      <Icon name="lucide:ticket" class="size-5" />
+                    </div>
+                  </UiTooltipTrigger>
+                  <UiTooltipContent>
+                    <p>Pass: {{ attendee.passType }}</p>
+                  </UiTooltipContent>
+                </UiTooltip>
 
-                      <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                          <UiLabel>Pass Type</UiLabel>
-                          <UiSelect
-                            v-model="values.passType"
+                <!-- Volunteer Badge -->
+                <UiTooltip v-if="attendee.volunteering">
+                  <UiTooltipTrigger as-child>
+                    <div
+                      class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
+                    >
+                      <Icon name="lucide:hand-heart" class="size-5" />
+                    </div>
+                  </UiTooltipTrigger>
+                  <UiTooltipContent>
+                    <p>Volunteer</p>
+                  </UiTooltipContent>
+                </UiTooltip>
+
+                <!-- Host Badge -->
+                <UiTooltip v-if="attendee.hostingStatus">
+                  <UiTooltipTrigger as-child>
+                    <div
+                      class="flex size-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                    >
+                      <Icon name="lucide:home" class="size-5" />
+                    </div>
+                  </UiTooltipTrigger>
+                  <UiTooltipContent>
+                    <p>Status: {{ attendee.hostingStatus }}</p>
+                  </UiTooltipContent>
+                </UiTooltip>
+              </div>
+            </div>
+
+            <div
+              class="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center"
+            >
+              <slot>
+                <UiDialog v-model:open="isEditProfileOpen">
+                  <UiDialogTrigger as-child>
+                    <UiButton size="sm" variant="outline" text="Edit Profile" />
+                    <UiButton
+                      size="sm"
+                      variant="outline"
+                      text="Logout"
+                      @click="logout"
+                    />
+                  </UiDialogTrigger>
+                  <UiDialogContent>
+                    <UiDialogHeader class="contents space-y-0 text-left">
+                      <UiDialogTitle class="px-0 pt-0">
+                        Edit Profile
+                      </UiDialogTitle>
+
+                      <form class="flex flex-col gap-4" @submit="updateProfile">
+                        <div class="grid grid-cols-2 gap-4">
+                          <UiVeeInput
+                            name="first_name"
+                            label="First Name"
+                            placeholder="Enter your first name"
+                          />
+                          <UiVeeInput
+                            name="last_name"
+                            label="Last Name"
+                            placeholder="Enter your last name"
+                          />
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                          <div class="space-y-2">
+                            <UiLabel>Pass Type</UiLabel>
+                            <UiSelect
+                              v-model="values.passType"
+                              @update:model-value="
+                                setFieldValue('passType', String($event ?? ''))
+                              "
+                            >
+                              <UiSelectTrigger placeholder="Select pass type" />
+                              <UiSelectContent>
+                                <UiSelectItem value="Full pass">
+                                  Full pass
+                                </UiSelectItem>
+                                <UiSelectItem value="Party pass">
+                                  Party pass
+                                </UiSelectItem>
+                              </UiSelectContent>
+                            </UiSelect>
+                          </div>
+
+                          <div class="space-y-2">
+                            <UiLabel>Role</UiLabel>
+                            <UiSelect
+                              v-model="values.role"
+                              @update:model-value="
+                                setFieldValue('role', String($event ?? ''))
+                              "
+                            >
+                              <UiSelectTrigger placeholder="Select role" />
+                              <UiSelectContent>
+                                <UiSelectItem value="Lead">Lead</UiSelectItem>
+                                <UiSelectItem value="Follow">
+                                  Follow
+                                </UiSelectItem>
+                                <UiSelectItem value="Switch">
+                                  Switch
+                                </UiSelectItem>
+                              </UiSelectContent>
+                            </UiSelect>
+                          </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                          <div class="space-y-2">
+                            <UiLabel>Hosting Status</UiLabel>
+                            <UiSelect
+                              v-model="values.hostingStatus"
+                              @update:model-value="
+                                setFieldValue(
+                                  'hostingStatus',
+                                  String($event ?? '')
+                                )
+                              "
+                            >
+                              <UiSelectTrigger placeholder="Select status" />
+                              <UiSelectContent>
+                                <UiSelectItem value="Being hosted">
+                                  Being hosted
+                                </UiSelectItem>
+                                <UiSelectItem value="Hosting">
+                                  Hosting
+                                </UiSelectItem>
+                                <UiSelectItem value="Not hosting">
+                                  Not hosting
+                                </UiSelectItem>
+                              </UiSelectContent>
+                            </UiSelect>
+                          </div>
+
+                          <div class="space-y-2">
+                            <UiLabel>Team</UiLabel>
+                            <UiSelect
+                              v-model="values.team"
+                              @update:model-value="
+                                setFieldValue('team', String($event ?? ''))
+                              "
+                            >
+                              <UiSelectTrigger placeholder="Select team" />
+                              <UiSelectContent>
+                                <UiSelectItem value="raspberry">
+                                  Raspberry
+                                </UiSelectItem>
+                                <UiSelectItem value="blueberry">
+                                  Blueberry
+                                </UiSelectItem>
+                                <UiSelectItem value="lemon curd">
+                                  Lemon Curd
+                                </UiSelectItem>
+                              </UiSelectContent>
+                            </UiSelect>
+                          </div>
+                        </div>
+
+                        <div
+                          class="flex items-center justify-between rounded-lg border p-3 shadow-sm"
+                        >
+                          <div class="space-y-0.5">
+                            <UiLabel>Volunteering</UiLabel>
+                            <p class="text-muted-foreground text-sm">
+                              Are you interested in volunteering?
+                            </p>
+                          </div>
+                          <UiSwitch
+                            :checked="values.volunteering"
+                            :model-value="values.volunteering"
                             @update:model-value="
-                              setFieldValue('passType', String($event ?? ''))
+                              setFieldValue('volunteering', $event)
                             "
-                          >
-                            <UiSelectTrigger placeholder="Select pass type" />
-                            <UiSelectContent>
-                              <UiSelectItem value="Full pass">
-                                Full pass
-                              </UiSelectItem>
-                              <UiSelectItem value="Party pass">
-                                Party pass
-                              </UiSelectItem>
-                            </UiSelectContent>
-                          </UiSelect>
+                          />
                         </div>
 
-                        <div class="space-y-2">
-                          <UiLabel>Role</UiLabel>
-                          <UiSelect
-                            v-model="values.role"
-                            @update:model-value="
-                              setFieldValue('role', String($event ?? ''))
-                            "
-                          >
-                            <UiSelectTrigger placeholder="Select role" />
-                            <UiSelectContent>
-                              <UiSelectItem value="Lead">Lead</UiSelectItem>
-                              <UiSelectItem value="Follow">Follow</UiSelectItem>
-                              <UiSelectItem value="Switch">Switch</UiSelectItem>
-                            </UiSelectContent>
-                          </UiSelect>
+                        <div class="mt-4 flex justify-end gap-2">
+                          <UiButton type="submit" :disabled="isSubmitting">
+                            Save Changes
+                          </UiButton>
                         </div>
-                      </div>
-
-                      <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                          <UiLabel>Hosting Status</UiLabel>
-                          <UiSelect
-                            v-model="values.hostingStatus"
-                            @update:model-value="
-                              setFieldValue(
-                                'hostingStatus',
-                                String($event ?? '')
-                              )
-                            "
-                          >
-                            <UiSelectTrigger placeholder="Select status" />
-                            <UiSelectContent>
-                              <UiSelectItem value="Being hosted">
-                                Being hosted
-                              </UiSelectItem>
-                              <UiSelectItem value="Hosting"
-                                >Hosting</UiSelectItem
-                              >
-                              <UiSelectItem value="Not hosting">
-                                Not hosting
-                              </UiSelectItem>
-                            </UiSelectContent>
-                          </UiSelect>
-                        </div>
-
-                        <div class="space-y-2">
-                          <UiLabel>Team</UiLabel>
-                          <UiSelect
-                            v-model="values.team"
-                            @update:model-value="
-                              setFieldValue('team', String($event ?? ''))
-                            "
-                          >
-                            <UiSelectTrigger placeholder="Select team" />
-                            <UiSelectContent>
-                              <UiSelectItem value="raspberry">
-                                Raspberry
-                              </UiSelectItem>
-                              <UiSelectItem value="blueberry">
-                                Blueberry
-                              </UiSelectItem>
-                              <UiSelectItem value="lemon curd">
-                                Lemon Curd
-                              </UiSelectItem>
-                            </UiSelectContent>
-                          </UiSelect>
-                        </div>
-                      </div>
-
-                      <div
-                        class="flex items-center justify-between rounded-lg border p-3 shadow-sm"
-                      >
-                        <div class="space-y-0.5">
-                          <UiLabel>Volunteering</UiLabel>
-                          <p class="text-muted-foreground text-sm">
-                            Are you interested in volunteering?
-                          </p>
-                        </div>
-                        <UiSwitch
-                          :checked="values.volunteering"
-                          :model-value="values.volunteering"
-                          @update:model-value="
-                            setFieldValue('volunteering', $event)
-                          "
-                        />
-                      </div>
-
-                      <div class="mt-4 flex justify-end gap-2">
-                        <UiButton type="submit" :disabled="isSubmitting">
-                          Save Changes
-                        </UiButton>
-                      </div>
-                    </form>
-                  </UiDialogHeader>
-                </UiDialogContent>
-              </UiDialog>
-            </slot>
+                      </form>
+                    </UiDialogHeader>
+                  </UiDialogContent>
+                </UiDialog>
+              </slot>
+            </div>
           </div>
         </div>
-      </div>
 
-      <UiDivider class="my-8" />
+        <UiDivider class="my-8" />
 
-      <div v-if="user" class="md:px-8">
-        <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
-          <RegistrationDetailsTable />
-          <!-- <AccountRegistrationDetails :attendee="attendee" /> -->
+        <div v-if="user" class="mt-6">
+          <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
+            <RegistrationDetailsTable />
+            <!-- <AccountRegistrationDetails :attendee="attendee" /> -->
 
-          <AccountFiles />
+            <AccountFiles />
+          </div>
         </div>
-      </div>
-    </UiCardContent>
-  </UiCard>
+      </UiCardContent>
+    </UiCard>
+  </UiContainer>
 </template>
 
 <script lang="ts" setup>
-import type { BreadcrumbItem } from "@/components/Ui/Breadcrumbs.vue";
 import { object, string, boolean } from "yup";
 import JamJar from "../assets/img/627a3e29a51c556-removebg-preview.png";
 
@@ -293,7 +298,6 @@ const name = computed(() =>
     : ""
 );
 const email = computed(() => (user.value as any)?.email);
-const avatar = computed(() => (user.value as any)?.avatar_url);
 
 const ProfileSchema = object({
   first_name: string().required().label("First Name"),
@@ -410,21 +414,4 @@ const updateProfile = handleSubmit(async (values) => {
   });
   isEditProfileOpen.value = false;
 });
-
-const crumbs = computed(
-  () =>
-    [
-      {
-        icon: "lucide:home",
-      },
-      {
-        label: "Settings",
-        link: "#",
-      },
-      {
-        label: "Profile",
-        link: "/confirm",
-      },
-    ] as BreadcrumbItem[]
-);
 </script>

@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import type { Stripe, StripeCardElement } from "@stripe/stripe-js";
-import { set } from "~~/node_modules/nuxt/dist/app/compat/capi";
+import {
+  PASS_TYPES,
+  HOSTING_OPTIONS,
+  COMMUNITY_OPTIONS,
+  PIF_OPTIONS,
+  TRAVEL_OPTIONS,
+} from "@/constants/registerOptions";
 
 const paymentStore = usePaymentStore();
 const { setChosenTicket, setRegistrationData, setPayItForward } = paymentStore;
 const { chosenTicket, payItForwardAmount } = storeToRefs(paymentStore);
 
 // stripe module client helper (from @unlok-co/nuxt-stripe module)
-const {
-  loadStripe: moduleLoadStripe,
-  stripe: moduleStripe,
-  isLoading,
-} = useClientStripe();
+const { loadStripe: moduleLoadStripe, stripe: moduleStripe } =
+  useClientStripe();
+
+const isOpen = ref(false);
+const registerProcessing = ref(false);
 
 // Personal + registration fields
 const firstName = ref("");
@@ -29,16 +35,6 @@ const hosting = ref("no-need");
 const isMusician = ref(false);
 const musicianInstrument = ref("");
 const bringInstrument = ref(false);
-
-const payItForwardOptions = [
-  { id: "none", name: "None", value: 0 },
-  { id: "donate-10", name: "+£10 sustainable top up", value: 10 },
-  { id: "donate-20", name: "+£20 sustainable top up", value: 20 },
-  { id: "donate-30", name: "+£30 sustainable top up", value: 30 },
-  { id: "request-10", name: "£10 discount (request support)", value: -10 },
-  { id: "request-20", name: "£20 discount (request support)", value: -20 },
-  { id: "request-30", name: "£30 discount (request support)", value: -30 },
-];
 
 // Pay it forward
 const payItForward = ref({
@@ -60,23 +56,9 @@ const optional = ref({
 });
 
 // UI state
-const name = ref("");
 const error = ref<string | null>(null);
 const processing = ref(false);
 const cardEl = ref<HTMLElement | null>(null);
-
-const paymentMethods = [
-  {
-    id: "payment-card",
-    name: "Full",
-    icon: "mdi:star",
-  },
-  {
-    id: "payment-paypal",
-    name: "Party",
-    icon: "mdi:party-popper",
-  },
-];
 
 let stripe: Stripe | null = null;
 let card: StripeCardElement | null = null;
@@ -135,8 +117,38 @@ function validateRequired() {
   return true;
 }
 
-async function onSubmit() {
+const completeRegistration = () => {
   useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  useSonner("Registration complete", {
+    description: "Thank you for registering!",
+  });
+};
+
+async function onSubmit() {
+  isOpen.value = true;
+  registerProcessing.value = true;
+
+  await nextTick(); // Ensure DOM updates before continuing
+
+  // useTimeout(() => {
+  //   registerProcessing.value = false;
+  //   useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  // }, 3000);
+
+  // after showing the modal for 3.5s, close it and stop processing
+  setTimeout(() => {
+    registerProcessing.value = false;
+    completeRegistration();
+  }, 2000);
+
+  await nextTick();
+
+  setTimeout(() => {
+    // optional: navigate to account or success page
+    navigateTo("/account");
+  }, 5000);
+
+  return;
   error.value = null;
   if (!validateRequired()) return;
 
@@ -223,37 +235,37 @@ async function onSubmit() {
 
 const totalPrice = computed(() => {
   let total = 0;
-  total = chosenTicket.value?.price + (payItForwardAmount.value || 0);
+  total = (chosenTicket?.value?.price ?? 0) + (payItForwardAmount.value || 0);
   return total;
 });
 </script>
 
 <template>
   <div class="mx-auto w-full max-w-7xl p-6">
-    <form @submit.prevent="onSubmit" class="space-y-4">
-      <div class="grid grid-cols-2 items-start gap-4">
+    <form class="space-y-4" @submit.prevent="onSubmit">
+      <div class="relative grid grid-cols-2 items-start gap-4">
         <UiCard>
           <UiCardContent class="grid space-y-3">
             <UiRadioGroup orientation="horizontal" class="grid gap-4">
               <template
-                v-for="(p, i) in paymentMethods"
+                v-for="(p, i) in PASS_TYPES"
                 :key="`payment-method-${i}`"
               >
-                <div @click="setChosenTicket(p?.name)">
+                <div @click="setChosenTicket(p?.value)">
                   <UiRadioGroupItem
-                    :id="p.id"
-                    :value="p.id"
+                    :id="p.value"
+                    :value="p.value"
                     class="peer sr-only"
                   />
                   <UiLabel
-                    :for="p.id"
+                    :for="p.value"
                     class="border-muted bg-popover peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary flex items-center justify-start gap-3 rounded-md border-2 p-4"
                     :class="
-                      chosenTicket.name === p.name ? 'border-primary' : ''
+                      chosenTicket?.value === p.value ? 'border-primary' : ''
                     "
                   >
                     <Icon class="h-6 w-6" :name="p.icon" />
-                    <span class="text-sm">{{ p?.name }} pass</span>
+                    <span class="text-sm">{{ p?.label }}</span>
                   </UiLabel>
                 </div>
               </template>
@@ -261,13 +273,13 @@ const totalPrice = computed(() => {
 
             <!-- Pass selection hint -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                >Selected pass</UiLabel
-              >
+              <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                Selected pass
+              </UiLabel>
               <div class="text-muted-foreground text-sm">
                 {{
-                  chosenTicket?.name
-                    ? `${chosenTicket?.name || chosenTicket} — £${chosenTicket?.price}`
+                  chosenTicket?.label
+                    ? `${chosenTicket?.label} — £${chosenTicket?.price}`
                     : "Please select a pass type above"
                 }}
               </div>
@@ -275,17 +287,27 @@ const totalPrice = computed(() => {
 
             <!-- Pay it forward -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                >Pay it forward</UiLabel
-              >
+              <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                Pay it forward
+              </UiLabel>
               <p class="text-muted-foreground mb-2 text-sm">
-                Choose to add a donation to support others attending, or request
-                support yourself.
+                With the Social and Sustainable Fund, we are able to give
+                participants who request a discount access to the festival. We
+                also donate to NGOs that fight for our values (sustainability &
+                ecology, community & social, Black American heritage).
+              </p>
+              <p class="text-muted-foreground mb-2 text-sm">
+                More information on the Social & Sustainable Fund can be found
+                on our website.
+              </p>
+              <p class="text-muted-foreground mb-2 text-sm">
+                If you are in a comfortable financial situation, we invite you
+                to invest in the Fund by topping their ticket with:
               </p>
               <div class="mb-2 items-center gap-2">
                 <UiRadioGroup orientation="horizontal" class="grid gap-4">
                   <template
-                    v-for="(p, i) in payItForwardOptions"
+                    v-for="(p, i) in PIF_OPTIONS"
                     :key="`payitforward-method-${i}`"
                   >
                     <div @click="setPayItForward(p?.value)">
@@ -345,42 +367,22 @@ const totalPrice = computed(() => {
 
             <!-- Hosting -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                >Hosting</UiLabel
-              >
+              <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                Hosting
+              </UiLabel>
               <div class="flex flex-col gap-2">
-                <label
-                  ><input type="radio" v-model="hosting" value="i-can-host" /> I
-                  can host</label
-                >
-                <label
-                  ><input
-                    type="radio"
-                    v-model="hosting"
-                    value="i-would-like-to-be-hosted"
-                  />
-                  I would like to be hosted</label
-                >
-                <label
-                  ><input type="radio" v-model="hosting" value="no-need" /> I
-                  don't need to be hosted</label
-                >
-                <label
-                  ><input
-                    type="radio"
-                    v-model="hosting"
-                    value="cannot-come-without"
-                  />
-                  I cannot come without being hosted</label
-                >
+                <label v-for="option in HOSTING_OPTIONS" :key="option.value">
+                  <input v-model="hosting" type="radio" :value="option.value" />
+                  {{ option.label }}
+                </label>
               </div>
             </div>
 
             <!-- JazzJam musician -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                >JazzJam musician</UiLabel
-              >
+              <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                JazzJam musician
+              </UiLabel>
               <label class="flex items-center gap-2">
                 <input type="checkbox" v-model="isMusician" />
                 <span>I would like to participate as a musician</span>
@@ -390,18 +392,18 @@ const totalPrice = computed(() => {
                   v-model="musicianInstrument"
                   placeholder="Instrument"
                 />
-                <label class="flex items-center gap-2"
-                  ><input type="checkbox" v-model="bringInstrument" /> I will
-                  bring my own instrument</label
-                >
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" v-model="bringInstrument" />
+                  I will bring my own instrument
+                </label>
               </div>
             </div>
 
             <!-- Merch placeholder -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                >Merch (T‑shirt)</UiLabel
-              >
+              <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                Merch (T‑shirt)
+              </UiLabel>
               <label class="flex items-center gap-2">
                 <input type="checkbox" v-model="merch.want" />
                 <span>I would like merch (T-shirt)</span>
@@ -415,9 +417,9 @@ const totalPrice = computed(() => {
                       <UiSelectItem value="M">Medium (M)</UiSelectItem>
                       <UiSelectItem value="L">Large (L)</UiSelectItem>
                       <UiSelectItem value="XL">Extra Large (XL)</UiSelectItem>
-                      <UiSelectItem value="XXL"
-                        >Double Extra Large (XXL)</UiSelectItem
-                      >
+                      <UiSelectItem value="XXL">
+                        Double Extra Large (XXL)
+                      </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -426,113 +428,50 @@ const totalPrice = computed(() => {
 
             <!-- Optional questions -->
             <div class="mt-4">
-              <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                >Optional</UiLabel
-              >
+              <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                Optional
+              </UiLabel>
               <UiInput
                 v-model="optional.startYear"
                 placeholder="What year did you start swing dancing?"
                 type="number"
               />
               <div class="mt-2">
-                <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                  >How are you travelling?</UiLabel
-                >
+                <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                  How are you travelling?
+                </UiLabel>
                 <UiSelect v-model="optional.travelMethod">
                   <UiSelectTrigger placeholder="Select an option" />
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="over-land"
-                        >I travel over land</UiSelectItem
+                      <UiSelectItem
+                        v-for="option in TRAVEL_OPTIONS"
+                        :key="option.value"
+                        :value="option.value"
                       >
-                      <UiSelectItem value="would-normally-fly"
-                        >Normally I'd fly but coming by land</UiSelectItem
-                      >
-                      <UiSelectItem value="by-plane"
-                        >I will come by plane</UiSelectItem
-                      >
+                        {{ option.label }}
+                      </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
               </div>
 
               <div class="mt-2">
-                <UiLabel class="font-lazy mb-1 block text-sm font-medium"
-                  >Community engagement (select any)</UiLabel
-                >
+                <UiLabel class="font-lazy mb-1 block text-lg font-medium">
+                  Community engagement (select any)
+                </UiLabel>
                 <div class="grid gap-2">
                   <label
-                    ><input
-                      type="checkbox"
-                      value="hosted"
-                      v-model="optional.community"
-                    />
-                    I have hosted dancers</label
+                    v-for="option in COMMUNITY_OPTIONS"
+                    :key="option.value"
                   >
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="organiser"
+                    <input
                       v-model="optional.community"
-                    />
-                    I organise dance events</label
-                  >
-                  <label
-                    ><input
                       type="checkbox"
-                      value="dj"
-                      v-model="optional.community"
+                      :value="option.value"
                     />
-                    I am a DJ</label
-                  >
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="motivator"
-                      v-model="optional.community"
-                    />
-                    I motivate people to attend socials</label
-                  >
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="volunteer"
-                      v-model="optional.community"
-                    />
-                    I volunteer at events</label
-                  >
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="communicator"
-                      v-model="optional.community"
-                    />
-                    I communicate dance opportunities</label
-                  >
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="teacher"
-                      v-model="optional.community"
-                    />
-                    I teach or facilitate dance content</label
-                  >
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="multiple"
-                      v-model="optional.community"
-                    />
-                    I take on multiple roles
+                    {{ option.label }}
                   </label>
-                  <label
-                    ><input
-                      type="checkbox"
-                      value="not-yet"
-                      v-model="optional.community"
-                    />
-                    I do not take an active role (yet)</label
-                  >
                 </div>
               </div>
             </div>
@@ -565,7 +504,7 @@ const totalPrice = computed(() => {
             <!-- Terms -->
             <div class="mt-8">
               <label class="flex items-center gap-2">
-                <input type="checkbox" v-model="termsAccepted" />
+                <input v-model="termsAccepted" type="checkbox" />
                 <span>I accept the Terms & Conditions</span>
               </label>
             </div>
@@ -681,6 +620,38 @@ const totalPrice = computed(() => {
             </div>
           </UiCardContent>
         </UiCard>
+
+        <UiDialog v-model:open="isOpen">
+          <UiDialogContent
+            class="flex flex-col items-center sm:max-h-[min(640px,80vh)] sm:max-w-lg [&>button:last-child]:hidden"
+          >
+            <template #content>
+              <div class="flex items-center space-x-2">
+                <div
+                  v-if="registerProcessing"
+                  class="flex flex-col items-center"
+                >
+                  <UiLoader class="mb-4" />
+                  <p class="text-lg font-medium">
+                    Processing your registration…
+                  </p>
+                </div>
+                <div v-else class="flex flex-col items-center">
+                  <Icon
+                    name="lucide:check-circle"
+                    class="mb-4 text-emerald-500"
+                    style="width: 48px; height: 48px"
+                  />
+                  <p class="text-lg font-medium">Registration complete!</p>
+                  <p class="text-muted-foreground mt-2 text-center text-sm">
+                    Thank you for registering. We look forward to seeing you at
+                    the festival!
+                  </p>
+                </div>
+              </div>
+            </template>
+          </UiDialogContent>
+        </UiDialog>
       </div>
     </form>
   </div>
@@ -689,6 +660,6 @@ const totalPrice = computed(() => {
 <style scoped>
 .font-lazy {
   font-family: "lazy_dog", sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.8rem;
 }
 </style>
