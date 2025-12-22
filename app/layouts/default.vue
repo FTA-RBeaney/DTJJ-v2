@@ -2,6 +2,7 @@
 import JamLogo from "@/assets/img/jam.png";
 const nav = [
   { name: "About", href: "/about" },
+  { name: "Vision", href: "/vision" },
   { name: "Values", href: "/values" },
 ];
 </script>
@@ -16,28 +17,28 @@ const nav = [
       }"
     >
       <UiContainer class="navbar">
-        <Motion
-          class="absolute"
-          :initial="{
-            opacity: 0,
-            y: -80,
-          }"
-          :animate="{
-            opacity: 1,
-            y: 0,
-          }"
-          :transition="{ type: 'spring', stiffness: 200, damping: 25 }"
-          :whileHover="{
-            x: [0, -6, 6, -4, 4, 0],
-            rotate: [0, -2, 2, -1, 1, 0],
-            transition: { duration: 0.5 },
-          }"
-        >
-          <NuxtLink to="/" class="block h-20">
-            <img :src="JamLogo" class="h-full object-cover" />
-          </NuxtLink>
-        </Motion>
         <ul class="flex justify-center">
+          <Motion
+            class="mr-10"
+            :initial="{
+              opacity: 0,
+              y: -80,
+            }"
+            :animate="{
+              opacity: 1,
+              y: 0,
+            }"
+            :transition="{ type: 'spring', stiffness: 200, damping: 25 }"
+            :whileHover="{
+              x: [0, -6, 6, -4, 4, 0],
+              rotate: [0, -2, 2, -1, 1, 0],
+              transition: { duration: 0.5 },
+            }"
+          >
+            <NuxtLink to="/" class="block h-20">
+              <img :src="JamLogo" class="h-full object-cover" />
+            </NuxtLink>
+          </Motion>
           <li
             v-for="(item, index) in nav"
             :key="index"
