@@ -1,22 +1,6 @@
 // Values extracted from the spreadsheet: column A (title) and column E (content)
 export const values = [
   {
-    title: "Original idea",
-    content: [
-      "London is a hub for the global arts: a host for internationally recognised festivals, though not of late for the London Lindy Hop scene.",
-      "The UK has always been at the forefront of the new wave of Lindy Hoppers, especially since Mama Lu and her Parkettes came to the UK in the mid 80s and Frankie Manning a few years later, planting a seed that inspired dancers to grow, share, and celebrate the tradition of Lindy Hop and Vernacular Jazz Dance. This moment was pivotal in recognising the significance of Lindy Hop within the broader history of Black dance in Britain as it had been relatively underground.",
-      "In the aftermath of the pandemic and with the impact of the Black Lives Matter movement, in London, the 30 plus year old UK Lindy Hop scene, already in a generational shift also experienced a general shift among dancers back into smaller micro-communities.",
-      "This festival team brings together a collective of London teachers and organisers, each with varied experiences in running events.  Our aim is to share the UK's role in the history and development of Lindy Hop worldwide, and to honour the ongoing creations of our communities.",
-      "This festival reflects what we have admired at other gatherings and what we aim to foster in our own city. It is both a return to roots and a step forward.",
-    ],
-  },
-  {
-    title: "Our Vision",
-    content: [
-      "With a variety of experiences between us we wanted to create an event that was more anchored in the values of community, accessibilty of knowlege, and celebration of the different facets of the Black art form we participate in. We want to work with artists near and far, and are prioritising participation and passion over perfection and posturing. We celebrate local talent in a global community.",
-    ],
-  },
-  {
     title: "Acknowledgement",
     content: [
       "Lindy Hop is, at its core, a Black American dance, born in a time of segregation and yet powerful enough to create community, resilience, and joy. Black cultural expression has always been rooted in embodiment, sharing, presence, and the celebration of life in all its complexity.",

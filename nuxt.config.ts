@@ -78,6 +78,8 @@ export default defineNuxtConfig({
     rootAttrs: {
       "data-vaul-drawer-wrapper": "",
     },
+    pageTransition: { name: "page", mode: "out-in" },
+    layoutTransition: { name: "layout", mode: "out-in" },
   },
 
   runtimeConfig: {

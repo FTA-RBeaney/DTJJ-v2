@@ -158,7 +158,13 @@
         >
         (<a href="http://www.berlinbalboaweekend.de/code-of-conduct/"
           >Berlin Balboa</a
-        >, Downtown Jazz Jam previous editions, Retro Weekend,
+        >,
+        <a
+          href="https://www.upsidedownfestival.be/"
+          target="_blank"
+          rel="noopener"
+          >Upside Down Festival</a
+        >, Retro Weekend,
         <a href="https://outofthetoolbox.be/" target="_blank" rel="noopener"
           >Out of the Toolbox</a
         >). Feel free to use this as it is or in a modified form, for your own

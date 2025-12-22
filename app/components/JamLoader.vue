@@ -34,7 +34,7 @@ import JamLogo from "@/assets/img/jam.png";
         }"
         :transition="{ duration: 0.5, repeat: Infinity, repeatDelay: 1.5 }"
       >
-        <NuxtLink to="/meet-the-team" class="block h-32">
+        <NuxtLink to="/about" class="block h-32">
           <img :src="JamLogo" class="h-full object-cover" />
         </NuxtLink>
       </Motion>

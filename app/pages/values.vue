@@ -6,22 +6,19 @@ import DripTransparent from "@/assets/img/drip-transparent.png";
 
 <template>
   <div>
-    <div class="relative h-[400px]">
-      <!-- <img
+    <UiContainer class="!max-w-3xl">
+      <h1 class="mt-12 mb-0 text-center text-7xl font-bold tracking-wider">
+        Values
+      </h1>
+    </UiContainer>
+    <!-- <div class="relative h-[400px]">
+      <img
         :src="JeffAndPolina"
         alt="Jeff and Polina"
         class="mx-auto h-[400px] w-full rounded-lg bg-fixed object-cover object-center shadow-lg"
-      /> -->
-      <UiContainer
-        class="absolute top-1/2 left-1/2 !max-w-3xl -translate-x-1/2 -translate-y-1/2"
-      >
-        <h1
-          class="mt-12 mb-0 text-center text-7xl font-bold tracking-wider text-black uppercase"
-        >
-          Values
-        </h1>
-      </UiContainer>
-    </div>
+      />
+
+    </div> -->
 
     <div class="gap-6">
       <section v-for="(value, index) in values" :key="index">

@@ -1,1 +1,5 @@
-// ESLint is disabled for this project.
+export default [
+  {
+    ignores: [".output/**"],
+  },
+];

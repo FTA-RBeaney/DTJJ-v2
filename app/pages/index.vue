@@ -5,6 +5,10 @@ definePageMeta({
   layout: "fullscreen",
   title: "Welcome to the jam",
 });
+
+setTimeout(() => {
+  navigateTo("/about");
+}, 3000);
 </script>
 
 <template>
@@ -30,7 +34,7 @@ definePageMeta({
         transition: { duration: 0.5 },
       }"
     >
-      <NuxtLink to="/meet-the-team" class="block h-32">
+      <NuxtLink to="/about" class="block h-32">
         <img :src="JamLogo" class="h-full object-cover" />
       </NuxtLink>
     </Motion>

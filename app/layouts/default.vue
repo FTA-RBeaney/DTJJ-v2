@@ -1,46 +1,9 @@
 <script setup>
 import JamLogo from "@/assets/img/jam.png";
 const nav = [
-  { name: "Home", href: "/" },
   { name: "About", href: "/about" },
-  { name: "Meet the Team", href: "/meet-the-team" },
   { name: "Values", href: "/values" },
-  { name: "Code of Conduct", href: "/code-of-conduct" },
-  // { name: "Schedule", href: "/timetable" },
-  { name: "Register", href: "/register" },
-  { name: "Account", href: "/account" },
-  { name: "Admin", href: "/attendees" },
 ];
-
-// navbar scroll state: transparent at top, white when scrolled
-const scrolled = ref(false);
-
-// onMounted(() => {
-//   onScroll();
-//   window.addEventListener("scroll", onScroll, { passive: true });
-// });
-
-// onBeforeUnmount(() => {
-//   window.removeEventListener("scroll", onScroll);
-// });
-
-const navAnimate = computed(() =>
-  scrolled.value
-    ? {
-        backgroundColor: "rgba(255,255,255,1)",
-        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-      }
-    : {
-        backgroundColor: "rgba(255,255,255,0)",
-        boxShadow: "0 0 0 rgba(0,0,0,0)",
-      }
-);
-// Use a fast tween when hiding the shadow (scroll -> top), and a spring when showing it.
-const navTransition = computed(() =>
-  scrolled.value
-    ? { type: "spring", stiffness: 200, damping: 25 }
-    : { type: "tween", duration: 0.08, ease: "easeOut" }
-);
 </script>
 
 <template>
@@ -51,8 +14,6 @@ const navTransition = computed(() =>
         backgroundColor: 'rgba(255,255,255,0)',
         boxShadow: '0 0 0 rgba(0,0,0,0)',
       }"
-      :animate="navAnimate"
-      :transition="navTransition"
     >
       <UiContainer class="navbar">
         <Motion
@@ -86,7 +47,6 @@ const navTransition = computed(() =>
               <NuxtLink
                 :to="item.href"
                 class="block py-4 text-lg font-medium hover:underline"
-                :class="[scrolled ? 'text-black' : 'text-black']"
               >
                 {{ item.name }}
               </NuxtLink>
@@ -101,3 +61,9 @@ const navTransition = computed(() =>
     <AppFooter />
   </div>
 </template>
+
+<style>
+.router-link-active {
+  text-decoration: underline;
+}
+</style>
