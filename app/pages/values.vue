@@ -24,7 +24,7 @@ import DripTransparent from "@/assets/img/drip-transparent.png";
       <section v-for="(value, index) in values" :key="index">
         <div class="py-12">
           <UiContainer class="!max-w-3xl">
-            <h2 class="mb-2 text-center text-4xl font-semibold">
+            <h2 class="mb-6 text-center text-5xl font-semibold">
               {{ value.title }}
             </h2>
             <p v-for="(item, i) in value.content" :key="i" class="mb-4 text-sm">
