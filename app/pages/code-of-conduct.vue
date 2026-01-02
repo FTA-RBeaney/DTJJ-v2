@@ -175,7 +175,13 @@
 </template>
 
 <style scoped>
+ul li,
 p {
   margin-bottom: 1rem;
+}
+
+ul li {
+  margin-left: 1.5rem;
+  list-style-type: disc;
 }
 </style>
