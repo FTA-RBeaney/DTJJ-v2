@@ -1458,4 +1458,25 @@ export namespace Auth {
     created_at: Nullable<string>;
     updated_at: Nullable<string>;
   }
-}
+
+  export interface DtjjPagesRow {
+    id: string; // uuid
+    slug: string; // text (unique)
+    content: Nullable<string>; // text
+    created_at: string; // timestamptz
+    updated_at: Nullable<string>; // timestamptz
+  }
+  export interface DtjjPagesInsert {
+    id?: string;
+    slug: string;
+    content?: string;
+    created_at?: string;
+    updated_at?: string;
+  }
+  export interface DtjjPagesUpdate {
+    id?: string;
+    slug?: string;
+    content?: string;
+    created_at?: string;
+    updated_at?: string;
+  }

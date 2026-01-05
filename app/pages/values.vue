@@ -46,9 +46,3 @@ import JamSplat from "@/assets/img/jam-splat-trans.png";
     </div>
   </div>
 </template>
-
-<style scoped>
-p {
-  margin-bottom: 1rem;
-}
-</style>

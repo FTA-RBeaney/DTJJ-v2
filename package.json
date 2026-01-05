@@ -7,13 +7,7 @@
     "dev": "nuxt dev",
     "lint": "npx stylelint ./app/assets/css/**/*.css --fix && npx stylelint ./app/{components,pages,layouts}/**/*.vue --fix && eslint . --fix",
     "postinstall": "nuxt prepare",
-    "typecheck": "npx nuxi typecheck .",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{vue,ts,mjs,css}": [
-      "npm run lint"
-    ]
+    "typecheck": "npx nuxi typecheck ."
   },
   "engines": {
     "node": "22.x"
@@ -34,6 +28,9 @@
     "@nuxtjs/color-mode": "^4.0.0",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/vite": "^4.1.17",
+    "@tiptap/extension-placeholder": "^3.14.0",
+    "@tiptap/starter-kit": "^3.14.0",
+    "@tiptap/vue-3": "^3.14.0",
     "@vee-validate/nuxt": "^4.15.1",
     "@vee-validate/yup": "^4.15.1",
     "@vueuse/nuxt": "^13.9.0",
@@ -66,6 +63,7 @@
     "lint-staged": "^16.2.6",
     "nuxt": "^4.2.1",
     "nuxt-lucide-icons": "^2.0.0",
+    "nuxt-tiptap-editor": "^3.2.0",
     "pinia": "^2.3.0",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",

@@ -15,7 +15,7 @@ const footerLinks = [
     <UiContainer>
       <UiSeparator class="mb-8" />
     </UiContainer>
-    <div class="flex items-center gap-8">
+    <div class="flex flex-col items-center gap-8 md:flex-row">
       <NuxtLink v-for="link in footerLinks" :key="link.name" :href="link.href">
         {{ link.name }}
       </NuxtLink>

@@ -1,26 +1,69 @@
-<script setup>
+<script setup lang="ts">
+import { generateHTML } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 import Logo from "@/assets/img/logo.png";
 
-const ABOUT = [
-  "Downtown Jazz Jam is a London Swing Dance festival that celebrates the vibrant culture of swing dancing through live music, dance workshops, and social events.",
-  "The first edition will be centred around celebrating the rich history of swing dance in London, with a focus on the people and communities that have shaped the scene over the years.",
-  "Our mission is to create an inclusive and welcoming environment for dancers of all levels to come together and share their love of swing dance.",
-];
+const supabase = useSupabaseClient();
+
+const content = computed(() => data.value ?? null);
+
+const htmlContent = computed(() => {
+  if (!content.value) return "";
+  try {
+    return generateHTML(content.value, [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Enter your content here...",
+      }),
+    ]);
+  } catch (error) {
+    console.error("Error generating HTML from TipTap content:", error);
+    return "";
+  }
+});
+
+const {
+  data,
+  pending,
+  error: asyncError,
+  refresh,
+} = await useAsyncData("about", async () => {
+  try {
+    const { data, error } = await supabase
+      .from("dtjj_pages")
+      .select("content")
+      .eq("slug", "about")
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      // PGRST116 = no rows found, which is expected for new pages
+      throw error;
+    }
+
+    return data?.content || null;
+  } catch (err) {
+    console.error("Error fetching page content:", err);
+    useSonner.error("Failed to load page content");
+    return null;
+  }
+});
+
+// `content` is a computed alias of the async `data`, so no extra watcher is needed.
 </script>
 
 <template>
   <div>
-    <UiContainer class="!max-w-3xl">
+    <UiContainer class="mt-10 !max-w-3xl">
       <img :src="Logo" alt="Jam Logo" class="mx-auto h-32 w-auto" />
       <h1 class="mt-12 mb-0 text-center text-7xl font-bold tracking-wider">
         About
       </h1>
     </UiContainer>
+
     <UiContainer class="!max-w-3xl py-14 text-center">
       <div class="wpb_wrapper">
-        <p v-for="(paragraph, index) in ABOUT" :key="index" class="mb-6">
-          {{ paragraph }}
-        </p>
+        <div v-if="htmlContent" v-html="htmlContent" class="mb-6"></div>
       </div>
     </UiContainer>
   </div>

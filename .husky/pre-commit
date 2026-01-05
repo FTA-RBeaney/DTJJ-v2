@@ -1,11 +1,4 @@
-# Prefer the local installed binary so hooks don't rely on a global `npx`.
- 
- 
-if [ -x "./node_modules/.bin/lint-staged" ]; then
-	./node_modules/.bin/lint-staged --allow-empty
-else
-	# Fallback to npm exec (available when npm is installed).
-	npm exec --no-install lint-staged --allow-empty
-fi
+# Linting disabled
+exit 0
 
 

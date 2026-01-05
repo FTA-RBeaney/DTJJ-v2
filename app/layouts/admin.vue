@@ -86,6 +86,45 @@
                   <span
                     class="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
                   >
+                    Pages
+                  </span>
+                </div>
+
+                <nav class="flex flex-col gap-0.5">
+                  <Motion
+                    v-for="(w, i) in pages"
+                    :key="i"
+                    :initial="{ opacity: 0, x: -10 }"
+                    :animate="{ opacity: 1, x: 0 }"
+                    :transition="{
+                      delay: i * 0.1,
+                      type: 'spring',
+                      stiffness: 200,
+                      damping: 25,
+                    }"
+                  >
+                    <UiButton
+                      :to="w.link"
+                      size="sm"
+                      variant="ghost"
+                      class="w-full justify-start gap-3 px-2"
+                    >
+                      <Icon
+                        v-if="w.icon"
+                        :name="w.icon"
+                        class="text-muted-foreground size-4"
+                      />
+                      <span>{{ w.title }}</span>
+                    </UiButton>
+                  </Motion>
+                </nav>
+              </div>
+
+              <div class="mb-6">
+                <div class="mb-2 flex items-center justify-between px-2">
+                  <span
+                    class="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+                  >
                     Teams
                   </span>
 
@@ -313,6 +352,8 @@ const navigation = [
     link: "/test-payment",
   },
 ];
+
+const pages = [{ title: "About", icon: "lucide:info", link: "/admin/about" }];
 
 const workspaces = [
   { title: "Strawberry", link: "#", color: "#ec4899" },

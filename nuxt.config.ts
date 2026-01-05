@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     "nuxt-lucide-icons",
     "@unlok-co/nuxt-stripe",
     "nuxt-countdown",
+    "nuxt-tiptap-editor",
   ],
 
   stripe: {
@@ -43,6 +44,10 @@ export default defineNuxtConfig({
       // your api options override for stripe client side https://stripe.com/docs/js/initializing#init_stripe_js-options
       options: {},
     },
+  },
+
+  tiptap: {
+    prefix: "Tiptap", //prefix for Tiptap imports, composables not included
   },
 
   css: ["~/assets/css/main.css"],
@@ -79,8 +84,8 @@ export default defineNuxtConfig({
     rootAttrs: {
       "data-vaul-drawer-wrapper": "",
     },
-    pageTransition: { name: "page", mode: "out-in" },
-    layoutTransition: { name: "layout", mode: "out-in" },
+    // pageTransition: { name: "slide", mode: "out-in" },
+    // layoutTransition: { name: "slide", mode: "out-in" },
   },
 
   runtimeConfig: {

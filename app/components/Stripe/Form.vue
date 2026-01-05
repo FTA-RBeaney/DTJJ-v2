@@ -657,7 +657,7 @@ const totalPrice = computed(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .font-lazy {
   font-family: "lazy_dog", sans-serif;
   font-size: 1.8rem;

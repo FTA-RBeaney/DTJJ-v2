@@ -9,18 +9,12 @@ const nav = [
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col justify-between bg-[#fdf4ee]">
-    <Motion
-      class="relative top-0 left-0 z-50 mx-auto pt-6"
-      :initial="{
-        backgroundColor: 'rgba(255,255,255,0)',
-        boxShadow: '0 0 0 rgba(0,0,0,0)',
-      }"
-    >
-      <UiContainer class="navbar">
+  <div class="">
+    <div class="flex min-h-screen flex-col bg-[#fdf4ee]">
+      <UiContainer class="navbar z-10 md:mt-10">
         <ul class="flex justify-center">
           <Motion
-            class="mr-10"
+            class="hidden md:mr-10 md:flex"
             :initial="{
               opacity: 0,
               y: -80,
@@ -48,7 +42,7 @@ const nav = [
             <Motion :whileHover="{ scale: 1.1 }">
               <NuxtLink
                 :to="item.href"
-                class="block py-4 text-lg font-medium hover:underline"
+                class="font-lazy block py-4 text-lg font-medium hover:underline"
               >
                 {{ item.name }}
               </NuxtLink>
@@ -56,11 +50,12 @@ const nav = [
           </li>
         </ul>
       </UiContainer>
-    </Motion>
-    <div class="mt-10">
-      <slot />
+
+      <div class="page-wrapper">
+        <slot />
+      </div>
+      <AppFooter />
     </div>
-    <AppFooter />
   </div>
 </template>
 
