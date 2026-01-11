@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
-import type { Stripe, StripeCardElement } from "@stripe/stripe-js";
+import { ref, computed } from "vue";
 import {
   PASS_TYPES,
   HOSTING_OPTIONS,
@@ -13,9 +12,7 @@ const paymentStore = usePaymentStore();
 const { setChosenTicket, setRegistrationData, setPayItForward } = paymentStore;
 const { chosenTicket, payItForwardAmount } = storeToRefs(paymentStore);
 
-// stripe module client helper (from @unlok-co/nuxt-stripe module)
-const { loadStripe: moduleLoadStripe, stripe: moduleStripe } =
-  useClientStripe();
+import { useStripeCard } from "@/composables/useStripeCard";
 
 const isOpen = ref(false);
 const registerProcessing = ref(false);
@@ -27,6 +24,8 @@ const pronouns = ref("");
 const email = ref("");
 const city = ref("");
 const friendName = ref("");
+const loading = ref(false);
+const success = ref(false);
 
 // Hosting
 const hosting = ref("no-need");
@@ -59,31 +58,13 @@ const optional = ref({
 const error = ref<string | null>(null);
 const processing = ref(false);
 const cardEl = ref<HTMLElement | null>(null);
-
-let stripe: Stripe | null = null;
-let card: StripeCardElement | null = null;
-let elements: any = null;
-
-onMounted(async () => {
-  try {
-    let _stripe: any = moduleStripe.value;
-    if (!_stripe) {
-      _stripe = await moduleLoadStripe();
-    }
-    if (!_stripe) {
-      error.value = "Stripe failed to load";
-      return;
-    }
-    stripe = _stripe as unknown as Stripe;
-    elements = (stripe as any).elements();
-    card = elements.create("card", {
-      hidePostalCode: true,
-    });
-    if (cardEl.value && card) card.mount(cardEl.value);
-  } catch (e: any) {
-    error.value = e?.message || String(e);
-  }
-});
+const {
+  stripe,
+  card,
+  ready,
+  cardComplete,
+  cardError: stripeCardError,
+} = useStripeCard(cardEl);
 
 function validateRequired() {
   if (!chosenTicket.value) {
@@ -110,45 +91,72 @@ function validateRequired() {
     error.value = "You must accept the Terms & Conditions.";
     return false;
   }
-  if (!stripe || !card) {
-    error.value = "Payment is not ready yet.";
+  if (!ready.value || !cardComplete.value) {
+    error.value = stripeCardError || "Payment is not ready yet.";
     return false;
   }
   return true;
 }
 
-const completeRegistration = () => {
+const isValidated = computed(() => {
+  return validateRequired();
+});
+
+const completeRegistration = async () => {
+  // write the data to Supabse 'registrations' table
+  const { error } = await useSupabaseClient()
+    .from("registrations")
+    .insert([
+      {
+        name: {
+          first: firstName.value,
+          last: surname.value,
+        },
+        pronouns: pronouns.value,
+        email: email.value,
+        city: city.value,
+        friend_name: friendName.value || null,
+        pass: chosenTicket.value || null,
+        pay_it_forward: { ...payItForward.value },
+        hosting: hosting.value,
+        musician: {
+          participates: isMusician.value,
+          instrument: musicianInstrument.value,
+          bringsInstrument: bringInstrument.value,
+        },
+        merch: merch.value,
+        terms_accepted: termsAccepted.value,
+        start_year: optional.value.startYear,
+        travel_method: optional.value.travelMethod,
+        community: optional.value.community,
+        submitted_at: new Date().toISOString(),
+      },
+    ]);
+  email.value = "";
+  firstName.value = "";
+  surname.value = "";
+  pronouns.value = "";
+  city.value = "";
+  friendName.value = "";
+  hosting.value = "no-need";
+  isMusician.value = false;
+  musicianInstrument.value = "";
+  bringInstrument.value = false;
+  payItForward.value = { type: "none", amount: 0 };
+  merch.value = { want: false, size: "" };
+  termsAccepted.value = false;
+  optional.value = {
+    startYear: null,
+    travelMethod: "",
+    community: [],
+  };
   useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-  useSonner("Registration complete", {
-    description: "Thank you for registering!",
-  });
 };
 
 async function onSubmit() {
   isOpen.value = true;
   registerProcessing.value = true;
 
-  await nextTick(); // Ensure DOM updates before continuing
-
-  // useTimeout(() => {
-  //   registerProcessing.value = false;
-  //   useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-  // }, 3000);
-
-  // after showing the modal for 3.5s, close it and stop processing
-  setTimeout(() => {
-    registerProcessing.value = false;
-    completeRegistration();
-  }, 2000);
-
-  await nextTick();
-
-  setTimeout(() => {
-    // optional: navigate to account or success page
-    navigateTo("/account");
-  }, 5000);
-
-  return;
   error.value = null;
   if (!validateRequired()) return;
 
@@ -196,9 +204,9 @@ async function onSubmit() {
     const clientSecret = (resp as any).clientSecret;
     if (!clientSecret) throw new Error("No client secret from server");
 
-    const result = await stripe!.confirmCardPayment(clientSecret, {
+    const result = await stripe.value!.confirmCardPayment(clientSecret, {
       payment_method: {
-        card,
+        card: card.value,
         billing_details: {
           name: `${firstName.value} ${surname.value}`,
           email: email.value,
@@ -212,17 +220,45 @@ async function onSubmit() {
     });
 
     if (result.error) {
+      useSonner.error(result.error.message || "Payment failed");
       error.value = result.error.message || "Payment failed";
+      isOpen.value = false;
     } else if (
       result.paymentIntent &&
       result.paymentIntent.status === "succeeded"
     ) {
       setRegistrationData(registration);
-      useSonner("Payment successful", {
-        description: "Thanks — payment succeeded.",
-      });
-      // optional: clear form or navigate to success page
-      navigateTo("/account");
+      await nextTick(); // Ensure DOM updates before continuing
+      loading.value = true;
+      success.value = false;
+      error.value = "";
+
+      try {
+        await $fetch("/api/send-confirmation", {
+          method: "POST",
+          body: {
+            email: email.value,
+            name: firstName.value,
+            passType: chosenTicket.value?.label || "",
+          },
+        });
+
+        success.value = true;
+      } catch (err) {
+        error.value = "Failed to send confirmation email";
+      } finally {
+        loading.value = false;
+        setTimeout(() => {
+          registerProcessing.value = false;
+          completeRegistration();
+        }, 2000);
+
+        await nextTick();
+
+        // setTimeout(() => {
+        //   navigateTo("/account");
+        // }, 5000);
+      }
     } else {
       error.value = "Payment not completed";
     }
@@ -512,7 +548,7 @@ const totalPrice = computed(() => {
             <div class="text-right">
               <UiButton
                 v-if="chosenTicket?.price"
-                :disabled="processing || !termsAccepted"
+                :disabled="processing || !termsAccepted || !isValidated"
                 type="submit"
                 class="btn"
               >
@@ -524,6 +560,7 @@ const totalPrice = computed(() => {
                       : "Please select a pass type"
                 }}
               </UiButton>
+
               <!-- Badges -->
               <div class="flex items-center gap-2">
                 <!-- Pass Type Badge -->
@@ -656,10 +693,3 @@ const totalPrice = computed(() => {
     </form>
   </div>
 </template>
-
-<style>
-.font-lazy {
-  font-family: "lazy_dog", sans-serif;
-  font-size: 1.8rem;
-}
-</style>

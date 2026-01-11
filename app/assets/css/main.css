@@ -5,6 +5,52 @@
   strategy: "class";
 }
 
+/* Color scheme overrides applied via `data-color-scheme` on <html> */
+:root[data-color-scheme="strawberry"] {
+  --primary: #ff6b9d;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #ff6b9d;
+  --sidebar-primary-foreground: #ffffff;
+  --accent: #ff387b;
+  --accent-foreground: #ffffff;
+}
+
+:root[data-color-scheme="blueberry"] {
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --accent: #3438ed;
+  --accent-foreground: #ffffff;
+}
+
+:root[data-color-scheme="apricot"] {
+  --primary: #ff9d5c;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #ff9d5c;
+  --sidebar-primary-foreground: #ffffff;
+  --accent: #ffb788;
+  --accent-foreground: #ffffff;
+}
+
+:root[data-color-scheme="kiwi"] {
+  --primary: #c4e538;
+  --primary-foreground: #0b0b0b;
+  --sidebar-primary: #c4e538;
+  --sidebar-primary-foreground: #0b0b0b;
+  --accent: #aee237;
+  --accent-foreground: #0b0b0b;
+}
+
+:root[data-color-scheme="blackcurrant"] {
+  --primary: #3d1a5c;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #3d1a5c;
+  --sidebar-primary-foreground: #ffffff;
+  --accent: #6b247f;
+  --accent-foreground: #ffffff;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -368,6 +414,10 @@
     url("/fonts/lazy_dog.woff") format("woff");
 }
 
+.font-lazy {
+  font-family: "lazy_dog", sans-serif;
+}
+
 h1,
 h2,
 h3,
@@ -378,10 +428,6 @@ h6,
   @apply font-semibold;
 
   font-family: "lazy_dog", sans-serif;
-}
-
-.navbar a {
-  font-size: 2rem;
 }
 
 ul li,

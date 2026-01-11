@@ -1,9 +1,10 @@
-<script lang="ts" setup></script>
-
+<script lang="ts" setup>
+const { selectedScheme } = useColorScheme();
+</script>
 <template>
   <div class="">
     <NuxtRouteAnnouncer />
-    <NuxtLoadingIndicator color="#a4013c" :height="10" />
+    <NuxtLoadingIndicator :color="selectedScheme" :height="10" />
     <NuxtLayout>
       <NuxtPage />
       <UiSonner />

@@ -1,3 +1,162 @@
+<script lang="ts" setup>
+import { object, string, boolean } from "yup";
+import JamJar from "../assets/img/627a3e29a51c556-removebg-preview.png";
+
+const sbUser = useSupabaseUser();
+const supabase = useSupabaseClient();
+const userStore = useUserStore();
+const { profile, attendee } = storeToRefs(userStore);
+const { fetchProfile, updateAttendee } = userStore;
+
+const isEditProfileOpen = ref(false);
+
+const user = computed(() => profile?.value ?? null);
+const name = computed(() =>
+  profile.value
+    ? `${(profile.value as any).first_name} ${(profile.value as any).last_name}`
+    : ""
+);
+const email = computed(() => (user.value as any)?.email);
+
+const { data, error } = await useAsyncData("attendee-data", async () => {
+  if (!sbUser.value) return null;
+
+  const { data, error } = await supabase
+    .from("registrations")
+    .select("*")
+    .eq("email", "rbeaney@gmail.com")
+    .single();
+
+  if (error) {
+    console.error("Error fetching attendee data:", error);
+    return null;
+  }
+
+  return data;
+});
+
+const ProfileSchema = object({
+  first_name: string().required().label("First Name"),
+  last_name: string().required().label("Last Name"),
+  passType: string().required().label("Pass Type"),
+  role: string().required().label("Role"),
+  hostingStatus: string().required().label("Hosting Status"),
+  team: string().required().label("Team"),
+  volunteering: boolean().label("Volunteering"),
+});
+
+const {
+  handleSubmit,
+  isSubmitting,
+  setValues: _setValues,
+  values,
+  setFieldValue,
+  resetForm,
+} = useForm<{
+  first_name: string;
+  last_name: string;
+  passType: string;
+  role: string;
+  hostingStatus: string;
+  team: string;
+  volunteering: boolean;
+}>({
+  validationSchema: ProfileSchema,
+  initialValues: {
+    first_name: "",
+    last_name: "",
+    passType: "",
+    role: "",
+    hostingStatus: "",
+    team: "",
+    volunteering: false,
+  },
+});
+
+// Pre-fill form when profile is loaded or modal opens
+watch(
+  [() => profile.value, () => attendee.value, () => isEditProfileOpen.value],
+  ([newProfile, newAttendee, _isOpen]) => {
+    const p = newProfile as any; // Cast to any or Profile interface if available
+    if (p && newAttendee) {
+      resetForm({
+        values: {
+          first_name: p.first_name || "",
+          last_name: p.last_name || "",
+          passType: newAttendee.passType || "",
+          role: newAttendee.role || "",
+          hostingStatus: newAttendee.hostingStatus || "",
+          team: newAttendee.team || "",
+          volunteering: newAttendee.volunteering ?? false,
+        },
+      });
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => sbUser.value,
+  async (user) => {
+    const userId = user?.id || user?.sub; // Support both id and sub fields
+    console.log("Confirm page - user state changed:", userId);
+
+    if (userId) {
+      console.log("Fetching profile for user:", userId);
+      await fetchProfile(userId);
+      console.log("Profile loaded:", profile.value);
+    }
+  },
+  { immediate: true }
+);
+
+const logout = () => {
+  supabase.auth.signOut();
+};
+
+const updateProfile = handleSubmit(async (values) => {
+  if (!sbUser.value) return;
+
+  const { first_name, last_name, ...attendeeData } = values;
+
+  // Update Profile in Supabase
+  // const { error } = await supabase
+  //   .from("profiles")
+  //   .update({ first_name, last_name })
+  //   .eq("id", sbUser.value.sub);
+
+  // if (error) {
+  //   useSonner("Error updating profile", {
+  //     description: error.message,
+  //     type: "error",
+  //   });
+  //   return;
+  // }
+
+  // Update Profile in Store (temporary until Supabase update is enabled)
+  if (profile.value) {
+    profile.value = {
+      ...(profile.value as any),
+      first_name,
+      last_name,
+    };
+  }
+
+  // Update Attendee in Store
+  updateAttendee(attendeeData);
+
+  useSonner("Profile updated", {
+    description: "Your profile has been successfully updated.",
+  });
+  isEditProfileOpen.value = false;
+});
+
+const fullName = computed(() => {
+  if (!data.value) return "";
+  return `${data.value.name.first} ${data.value.name?.last}`;
+});
+</script>
+
 <template>
   <UiContainer class="!max-w-5xl">
     <UiCard>
@@ -30,8 +189,8 @@
               </slot> -->
               <div class="flex flex-col gap-1">
                 <slot name="title">
-                  <h1 v-if="name" class="leading-none font-bold lg:text-lg">
-                    {{ name }}
+                  <h1 v-if="fullName" class="leading-none font-bold lg:text-lg">
+                    {{ fullName }}
                   </h1>
                 </slot>
                 <slot name="description">
@@ -268,7 +427,7 @@
 
         <div v-if="user" class="mt-6">
           <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
-            <RegistrationDetailsTable />
+            <RegistrationDetailsTable :data="data" />
             <!-- <AccountRegistrationDetails :attendee="attendee" /> -->
 
             <AccountFiles />
@@ -278,140 +437,3 @@
     </UiCard>
   </UiContainer>
 </template>
-
-<script lang="ts" setup>
-import { object, string, boolean } from "yup";
-import JamJar from "../assets/img/627a3e29a51c556-removebg-preview.png";
-
-const sbUser = useSupabaseUser();
-const supabase = useSupabaseClient();
-const userStore = useUserStore();
-const { profile, attendee } = storeToRefs(userStore);
-const { fetchProfile, updateAttendee } = userStore;
-
-const isEditProfileOpen = ref(false);
-
-const user = computed(() => profile?.value ?? null);
-const name = computed(() =>
-  profile.value
-    ? `${(profile.value as any).first_name} ${(profile.value as any).last_name}`
-    : ""
-);
-const email = computed(() => (user.value as any)?.email);
-
-const ProfileSchema = object({
-  first_name: string().required().label("First Name"),
-  last_name: string().required().label("Last Name"),
-  passType: string().required().label("Pass Type"),
-  role: string().required().label("Role"),
-  hostingStatus: string().required().label("Hosting Status"),
-  team: string().required().label("Team"),
-  volunteering: boolean().label("Volunteering"),
-});
-
-const {
-  handleSubmit,
-  isSubmitting,
-  setValues: _setValues,
-  values,
-  setFieldValue,
-  resetForm,
-} = useForm<{
-  first_name: string;
-  last_name: string;
-  passType: string;
-  role: string;
-  hostingStatus: string;
-  team: string;
-  volunteering: boolean;
-}>({
-  validationSchema: ProfileSchema,
-  initialValues: {
-    first_name: "",
-    last_name: "",
-    passType: "",
-    role: "",
-    hostingStatus: "",
-    team: "",
-    volunteering: false,
-  },
-});
-
-// Pre-fill form when profile is loaded or modal opens
-watch(
-  [() => profile.value, () => attendee.value, () => isEditProfileOpen.value],
-  ([newProfile, newAttendee, _isOpen]) => {
-    const p = newProfile as any; // Cast to any or Profile interface if available
-    if (p && newAttendee) {
-      resetForm({
-        values: {
-          first_name: p.first_name || "",
-          last_name: p.last_name || "",
-          passType: newAttendee.passType || "",
-          role: newAttendee.role || "",
-          hostingStatus: newAttendee.hostingStatus || "",
-          team: newAttendee.team || "",
-          volunteering: newAttendee.volunteering ?? false,
-        },
-      });
-    }
-  },
-  { immediate: true }
-);
-
-watch(
-  () => sbUser.value,
-  async (user) => {
-    const userId = user?.id || user?.sub; // Support both id and sub fields
-    console.log("Confirm page - user state changed:", userId);
-
-    if (userId) {
-      console.log("Fetching profile for user:", userId);
-      await fetchProfile(userId);
-      console.log("Profile loaded:", profile.value);
-    }
-  },
-  { immediate: true }
-);
-
-const logout = () => {
-  supabase.auth.signOut();
-};
-
-const updateProfile = handleSubmit(async (values) => {
-  if (!sbUser.value) return;
-
-  const { first_name, last_name, ...attendeeData } = values;
-
-  // Update Profile in Supabase
-  // const { error } = await supabase
-  //   .from("profiles")
-  //   .update({ first_name, last_name })
-  //   .eq("id", sbUser.value.sub);
-
-  // if (error) {
-  //   useSonner("Error updating profile", {
-  //     description: error.message,
-  //     type: "error",
-  //   });
-  //   return;
-  // }
-
-  // Update Profile in Store (temporary until Supabase update is enabled)
-  if (profile.value) {
-    profile.value = {
-      ...(profile.value as any),
-      first_name,
-      last_name,
-    };
-  }
-
-  // Update Attendee in Store
-  updateAttendee(attendeeData);
-
-  useSonner("Profile updated", {
-    description: "Your profile has been successfully updated.",
-  });
-  isEditProfileOpen.value = false;
-});
-</script>

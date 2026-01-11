@@ -20,11 +20,11 @@ const footerLinks = [
         {{ link.name }}
       </NuxtLink>
     </div>
-    <div class="mt-8 flex items-center gap-4 text-[#a4013c]">
+    <div class="mt-8 flex items-center gap-4">
       <a
         href="https://fb.me/e/j24Nyn9Gq"
         target="_blank"
-        class="transition-all duration-300 hover:-translate-y-0.5"
+        class="text-primary transition-all duration-300 hover:-translate-y-0.5"
       >
         <svg
           width="24"
@@ -45,7 +45,7 @@ const footerLinks = [
       <a
         href="https://www.instagram.com/downtownjazzjam/"
         target="_blank"
-        class="transition-all duration-300 hover:-translate-y-0.5"
+        class="text-primary transition-all duration-300 hover:-translate-y-0.5"
       >
         <svg
           width="24"

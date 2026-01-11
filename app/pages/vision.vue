@@ -1,5 +1,7 @@
 <script setup>
 import { VISION } from "@/constants/vision";
+
+import JamSplat from "@/assets/img/jam-splat-trans.svg";
 </script>
 
 <template>
@@ -15,6 +17,9 @@ import { VISION } from "@/constants/vision";
           {{ paragraph }}
         </p>
       </div>
+    </UiContainer>
+    <UiContainer>
+      <JamSplat class="text-primary fill-primary mx-auto h-24 w-auto" />
     </UiContainer>
   </div>
 </template>

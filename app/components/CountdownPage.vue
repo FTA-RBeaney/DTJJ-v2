@@ -15,8 +15,10 @@ const seconds = ref(0);
       <!-- <Transition name="fade" appear> -->
       <div class="mx-auto max-w-[1900px] space-y-5 text-center">
         <transition-fade>
-          <div>
-            <p class="text-black">Tickets go on sale:</p>
+          <div
+            class="mx-auto max-w-xl rounded-xl border-2 border-black bg-white p-16"
+          >
+            <p class="font-lazy text-4xl text-black">Tickets go on sale:</p>
             <div class="mx-auto mb-2 flex max-w-2xl justify-center lg:mb-6">
               <Countdown
                 :date="new Date('February 01, 2026 00:00:00')"

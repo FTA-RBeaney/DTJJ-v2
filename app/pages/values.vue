@@ -1,9 +1,7 @@
 <script setup>
 import { values } from "@/constants/values";
 
-import DripTransparent from "@/assets/img/drip-transparent.png";
-import JamJar from "@/assets/img/627a3e29a51c556-removebg-preview.png";
-import JamSplat from "@/assets/img/jam-splat-trans.png";
+import JamSplat from "@/assets/img/jam-splat-trans.svg";
 </script>
 
 <template>
@@ -35,14 +33,16 @@ import JamSplat from "@/assets/img/jam-splat-trans.png";
           </UiContainer>
         </div>
         <UiContainer v-if="index !== values.length - 1" class="!max-w-3xl">
-          <img
-            :src="JamSplat"
-            alt="Decorative drip"
-            class="mx-auto h-24 w-auto"
-          />
-          <!-- <UiSeparator class="my-10" /> -->
+          <JamSplat class="text-primary fill-primary mx-auto h-24 w-auto" />
         </UiContainer>
       </section>
     </div>
   </div>
 </template>
+
+<style>
+svg path {
+  width: 100%;
+  height: 100%;
+}
+</style>

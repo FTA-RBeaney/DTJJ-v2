@@ -1,11 +1,24 @@
 <script setup>
 import JamLogo from "@/assets/img/jam.png";
+import { useColorScheme, COLOR_SCHEMES } from "@/composables/useColorScheme";
+
 const nav = [
   { name: "About", href: "/about" },
   { name: "Vision", href: "/vision" },
   { name: "Values", href: "/values" },
+  {
+    name: "Details",
+    children: [
+      { name: "Venue", href: "/venue" },
+      { name: "Teachers", href: "/teachers" },
+      { name: "Bands", href: "/bands" },
+    ],
+  },
   { name: "Register", href: "/register" },
 ];
+
+const { selectedScheme, setColorScheme, getSchemeColor } = useColorScheme();
+const isColorPickerOpen = ref(false);
 </script>
 
 <template>
@@ -37,12 +50,31 @@ const nav = [
           <li
             v-for="(item, index) in nav"
             :key="index"
-            class="mr-6 inline-block"
+            class="group relative mr-6 inline-block"
           >
+            <ul
+              v-if="item.children"
+              class="absolute top-14 m-0 hidden list-none gap-4 p-0 group-hover:flex"
+            >
+              <li
+                v-for="(child, index) in item.children"
+                :key="index"
+                class="!m-0 !list-none !p-0"
+              >
+                <Motion :whileHover="{ scale: 1.1 }"
+                  ><NuxtLink
+                    :to="child.href"
+                    class="font-lazy block py-4 text-center text-2xl font-medium hover:underline"
+                  >
+                    {{ child.name }}
+                  </NuxtLink>
+                </Motion>
+              </li>
+            </ul>
             <Motion :whileHover="{ scale: 1.1 }">
               <NuxtLink
                 :to="item.href"
-                class="font-lazy block py-4 text-lg font-medium hover:underline"
+                class="font-lazy mb-4 block pt-6 text-4xl font-medium hover:underline"
               >
                 {{ item.name }}
               </NuxtLink>
@@ -55,6 +87,45 @@ const nav = [
         <slot />
       </div>
       <AppFooter />
+
+      <div class="fixed top-10 right-10 z-50">
+        <!-- Color Picker Button in Top Right -->
+        <UiPopover v-model:open="isColorPickerOpen">
+          <UiPopoverTrigger as-child>
+            <UiButton
+              variant="ghost"
+              size="icon"
+              class="absolute -top-2 right-0 z-10"
+              title="Change color scheme"
+            >
+              <Icon name="lucide:palette" class="h-5 w-5" />
+            </UiButton>
+          </UiPopoverTrigger>
+          <UiPopoverContent class="w-48">
+            <div class="space-y-2">
+              <h4 class="text-sm font-medium">Choose your jam</h4>
+              <div class="right-0 grid grid-cols-5 gap-2">
+                <button
+                  v-for="(scheme, key) in COLOR_SCHEMES"
+                  :key="key"
+                  @click="
+                    setColorScheme(key);
+                    isColorPickerOpen = false;
+                  "
+                  :title="scheme.name"
+                  class="rounded-lg p-3 transition-all hover:scale-110"
+                  :class="
+                    selectedScheme === key
+                      ? 'ring-foreground ring-2 ring-offset-2'
+                      : ''
+                  "
+                  :style="{ backgroundColor: scheme.hex }"
+                />
+              </div>
+            </div>
+          </UiPopoverContent>
+        </UiPopover>
+      </div>
     </div>
   </div>
 </template>

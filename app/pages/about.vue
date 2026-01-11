@@ -3,6 +3,7 @@ import { generateHTML } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Logo from "@/assets/img/logo.png";
+import JamSplat from "@/assets/img/jam-splat-trans.svg";
 
 const supabase = useSupabaseClient();
 
@@ -65,6 +66,9 @@ const {
       <div class="wpb_wrapper">
         <div v-if="htmlContent" v-html="htmlContent" class="mb-6"></div>
       </div>
+    </UiContainer>
+    <UiContainer class="!max-w-3xl">
+      <JamSplat class="text-primary fill-primary mx-auto h-24 w-auto" />
     </UiContainer>
   </div>
 </template>

@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 import JamLogo from "@/assets/img/jam.png";
+import { useColorScheme, COLOR_SCHEMES } from "@/composables/useColorScheme";
+const { selectedScheme, setColorScheme, getSchemeColor } = useColorScheme();
 
 definePageMeta({
   layout: "fullscreen",
   title: "Welcome to the jam",
 });
 
-setTimeout(() => {
+const jamChosen = (key: string) => {
+  setColorScheme(key);
   navigateTo("/about");
-}, 3000);
+};
 </script>
 
 <template>
@@ -39,6 +42,23 @@ setTimeout(() => {
       </NuxtLink>
     </Motion>
 
-    <h1 class="mt-8 text-4xl font-bold">Welcome to the jam</h1>
+    <h1 class="mt-8 text-6xl font-bold">Welcome</h1>
+    <div>
+      <h2 class="text-2xl">What's your jam?</h2>
+      <div class="mt-4 flex flex-col gap-2">
+        <UiButton
+          v-for="(scheme, key) in COLOR_SCHEMES"
+          :key="key"
+          :title="scheme.name"
+          @click="jamChosen(key)"
+          class="rounded-lg p-3 transition-all hover:scale-110"
+          :class="
+            selectedScheme === key ? 'ring-foreground ring-2 ring-offset-2' : ''
+          "
+          :style="{ backgroundColor: scheme.hex }"
+          >{{ scheme.name }}</UiButton
+        >
+      </div>
+    </div>
   </div>
 </template>

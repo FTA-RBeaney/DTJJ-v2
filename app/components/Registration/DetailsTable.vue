@@ -1,49 +1,14 @@
 <script setup lang="ts">
 import JamJar from "@/assets/img/627a3e29a51c556-removebg-preview.png";
-const paymentStore = usePaymentStore();
-const { registrationData } = storeToRefs(paymentStore);
+import {
+  HOSTING_OPTIONS,
+  COMMUNITY_OPTIONS,
+  TRAVEL_OPTIONS,
+} from "@/constants/registerOptions";
 
-// Ensure registrationData is always typed as RegistrationData
-if (!registrationData.value) {
-  registrationData.value = {
-    name: { first: "", last: "" },
-    pronouns: "",
-    role: "",
-    pass: { name: "" },
-    volunteering: false,
-    hosting: "",
-    musician: { participates: false, instrument: "" },
-    merch: { want: false, size: "" },
-    optional: {},
-  } as RegistrationData;
-}
-
-// Explicitly type registrationData as Ref<RegistrationData>
-const registrationDataTyped =
-  registrationData as import("vue").Ref<RegistrationData>;
-
-type RegistrationData = {
-  name: {
-    first: string;
-    last: string;
-  };
-  pronouns: string;
-  role: string;
-  pass: {
-    name: string;
-  };
-  volunteering: boolean;
-  hosting: string;
-  musician: {
-    participates: boolean;
-    instrument?: string;
-  };
-  merch: {
-    want: boolean;
-    size?: string;
-  };
-  optional?: Record<string, any>;
-};
+const props = defineProps<{
+  data: any;
+}>();
 
 const teamBadgeClass = (team: string) => {
   const palette: Record<string, string> = {
@@ -56,89 +21,98 @@ const teamBadgeClass = (team: string) => {
     "bg-muted text-foreground ring-1 ring-border"
   );
 };
-const accountDetails = computed(() => {
-  return [
-    {
-      label: "Name",
-      value: "Robert Beaney",
-    },
-    {
-      label: "Pronouns",
-      value: "he/him",
-    },
-    {
-      label: "Primary role",
-      value: "Lead",
-    },
-    {
-      label: "Pass type",
-      value: "Full pass",
-    },
 
-    {
-      label: "Volunteering",
-      value: registrationDataTyped.value.volunteering ? "Yes" : "No",
-    },
-    {
-      label: "Hosting status",
-      value:
-        registrationDataTyped.value.hosting === "i-can-host"
-          ? "Hosting"
-          : "Not hosting",
-    },
-    {
-      label: "Musician",
-      value: `${registrationDataTyped.value.musician?.participates ? "Yes" : "No"}${
-        registrationDataTyped.value.musician?.participates
-          ? ` (${registrationDataTyped.value.musician?.instrument})`
-          : ""
-      }`,
-    },
-    {
-      label: "Merch",
-      value: registrationDataTyped.value.merch?.want
-        ? `${registrationDataTyped.value.merch?.size}`
-        : "No",
-    },
-  ];
+const fullName = computed(() => {
+  if (!props.data) return "";
+  return `${props.data.name.first} ${props.data.name?.last}`;
 });
+
+const hostedOptions = (item) => {
+  if (!item) return "";
+
+  // find the matching item in HOSTING_OPTIONS and return the label
+  return HOSTING_OPTIONS.find((option) => option.value === item)?.label;
+};
+
+// take an item from the community array and return apprpopriate label
+const communityOptions = (item) => {
+  if (!item) return "";
+
+  // find the matching item in COMMUNITY_OPTIONS and return the label
+  return COMMUNITY_OPTIONS.find((option) => option.value === item)?.label;
+};
+
+const travelOptions = (item) => {
+  if (!item) return "";
+
+  return TRAVEL_OPTIONS.find((option) => option.value === item)?.label;
+};
 </script>
 
 <template>
   <div class="grid gap-4">
     <div
-      v-if="accountDetails"
+      v-if="data"
       class="border-border bg-background overflow-hidden rounded-lg border"
     >
       <UiTable>
         <UiTableBody>
-          <template v-for="(item, index) in accountDetails" :key="index">
+          <template v-for="(item, index) in data" :key="index">
             <UiTableRow>
               <UiTableCell class="bg-muted/50 py-2 font-medium">
-                {{ item.label }}
+                {{ index }}
               </UiTableCell>
               <UiTableCell>
-                <template v-if="item.label === 'Pass type'">
-                  <UiBadge variant="default">
-                    {{ item.value }}
+                <template v-if="index === 'pass'">
+                  <UiBadge variant="default" class="px-4 py-2">
+                    {{ item?.label }}
                     <Icon
                       :name="
-                        item.value === 'Full pass'
+                        item.label === 'Full pass'
                           ? 'lucide:star'
                           : 'lucide:party-popper'
                       "
                     />
                   </UiBadge>
                 </template>
-                <template
-                  v-else-if="item.label === 'Merch' && item.value !== 'No'"
-                >
+                <template v-else-if="index === 'name'">
+                  {{ fullName }}
+                </template>
+                <template v-else-if="index === 'pay_it_forward'">
+                  <UiBadge variant="default"> Yes </UiBadge>
+                </template>
+                <template v-else-if="index === 'hosting'">
                   <UiBadge variant="default">
-                    {{ item.value }}
+                    {{ hostedOptions(item) }}
                   </UiBadge>
                 </template>
+                <template v-else-if="index === 'musician'">
+                  <UiBadge variant="default">
+                    {{ item.instrument }}
+                  </UiBadge>
+                </template>
+                <template v-else-if="index === 'merch' && item.want">
+                  <UiBadge variant="default">
+                    {{ item.size }}
+                  </UiBadge>
+                </template>
+
+                <template v-else-if="index === 'travel_method'">
+                  {{ travelOptions(item) }}
+                </template>
+                <template v-else-if="index === 'community'">
+                  <div class="flex flex-wrap gap-2">
+                    <UiBadge
+                      variant="default"
+                      v-for="community in item"
+                      :key="community"
+                    >
+                      {{ communityOptions(community) }}
+                    </UiBadge>
+                  </div>
+                </template>
                 <template v-else>
-                  {{ item.value }}
+                  {{ item }}
                 </template>
               </UiTableCell>
             </UiTableRow>

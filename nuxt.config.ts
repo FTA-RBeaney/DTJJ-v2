@@ -1,4 +1,5 @@
 import Tailwind from "@tailwindcss/vite";
+import svgLoader from "vite-svg-loader";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -53,7 +54,7 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   vite: {
-    plugins: [Tailwind()],
+    plugins: [Tailwind(), svgLoader()],
   },
 
   fonts: {
@@ -61,6 +62,8 @@ export default defineNuxtConfig({
       processCSSVariables: true,
     },
   },
+
+  buildModules: ["@nuxtjs/svg"],
 
   postcss: {
     plugins: {
@@ -170,5 +173,17 @@ export default defineNuxtConfig({
     class: "shrink-0",
     fetchTimeout: 2000,
     serverBundle: "local",
+  },
+
+  svg: {
+    vueSvgLoader: {
+      // vue-svg-loader options
+    },
+    svgSpriteLoader: {
+      // svg-sprite-loader options
+    },
+    fileLoader: {
+      // file-loader options
+    },
   },
 });
