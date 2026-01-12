@@ -118,25 +118,47 @@ export default defineNuxtConfig({
       contentSecurityPolicy:
         process.env.NODE_ENV === "production"
           ? {
+              "default-src": ["'self'"],
+
               "script-src": [
                 "'self'",
                 "https:",
                 "'unsafe-inline'",
                 "'unsafe-eval'",
+                "https://js.stripe.com",
               ],
-              "style-src": ["'self'", "'unsafe-inline'", "https:"],
-              "img-src": [
+
+              "frame-src": [
                 "'self'",
-                "data:",
-                "https://res.cloudinary.com",
-                "https://misyrpoxvyxwrnhnmeww.supabase.co",
-                "https://randomuser.me",
+                "https://js.stripe.com",
+                "https://hooks.stripe.com",
+                "https://m.stripe.network",
+                "https://q.stripe.com",
+                "https://r.stripe.com",
               ],
+
+              // Important fallback for some browsers
+              "child-src": [
+                "'self'",
+                "https://js.stripe.com",
+                "https://hooks.stripe.com",
+                "https://m.stripe.network",
+                "https://q.stripe.com",
+                "https://r.stripe.com",
+              ],
+
               "connect-src": [
                 "'self'",
-                "https://misyrpoxvyxwrnhnmeww.supabase.co",
                 "https://api.stripe.com",
+                "https://q.stripe.com",
+                "https://r.stripe.com",
+                "https://m.stripe.network",
+                "https://misyrpoxvyxwrnhnmeww.supabase.co",
               ],
+
+              "img-src": ["'self'", "data:", "https:"],
+
+              "style-src": ["'self'", "'unsafe-inline'", "https:"],
             }
           : false,
     },
