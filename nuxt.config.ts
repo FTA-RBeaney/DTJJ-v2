@@ -116,6 +116,12 @@ export default defineNuxtConfig({
   security: {
     headers: {
       contentSecurityPolicy: {
+        "script-src": [
+          "'self'",
+          "https:",
+          "'unsafe-inline'",
+          "'strict-dynamic'",
+        ],
         "img-src": [
           "'self'",
           "data:",
@@ -123,7 +129,11 @@ export default defineNuxtConfig({
           "https://misyrpoxvyxwrnhnmeww.supabase.co",
           "https://randomuser.me",
         ],
-        "connect-src": ["'self'", "https://misyrpoxvyxwrnhnmeww.supabase.co"],
+        "connect-src": [
+          "'self'",
+          "https://misyrpoxvyxwrnhnmeww.supabase.co",
+          "https://api.stripe.com",
+        ],
       },
     },
   },
