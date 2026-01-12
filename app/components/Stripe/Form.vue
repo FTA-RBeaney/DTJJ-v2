@@ -396,6 +396,8 @@ const totalPrice = computed(() => {
                 </label>
               </div> -->
 
+              <!-- todo: add a details section if the user can host -->
+
               <div class="mb-2 items-center gap-2">
                 <UiRadioGroup orientation="horizontal" class="grid gap-4">
                   <template
@@ -498,30 +500,6 @@ const totalPrice = computed(() => {
               <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
                 Optional
               </UiLabel>
-              <UiInput
-                v-model="optional.startYear"
-                placeholder="What year did you start swing dancing?"
-                type="number"
-              />
-              <div class="mt-2">
-                <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
-                  How are you travelling?
-                </UiLabel>
-                <UiSelect v-model="optional.travelMethod">
-                  <UiSelectTrigger placeholder="Select an option" />
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="option in TRAVEL_OPTIONS"
-                        :key="option.value"
-                        :value="option.value"
-                      >
-                        {{ option.label }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </div>
 
               <div class="mt-2">
                 <UiLabel class="font-lazy mb-1 block text-2xl font-medium">

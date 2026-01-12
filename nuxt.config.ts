@@ -115,15 +115,30 @@ export default defineNuxtConfig({
 
   security: {
     headers: {
-      contentSecurityPolicy: {
-        "img-src": [
-          "'self'",
-          "data:",
-          "https://res.cloudinary.com",
-          "https://misyrpoxvyxwrnhnmeww.supabase.co",
-          "https://randomuser.me",
-        ],
-      },
+      contentSecurityPolicy:
+        process.env.NODE_ENV === "production"
+          ? {
+              "script-src": [
+                "'self'",
+                "https:",
+                "'unsafe-inline'",
+                "'unsafe-eval'",
+              ],
+              "style-src": ["'self'", "'unsafe-inline'", "https:"],
+              "img-src": [
+                "'self'",
+                "data:",
+                "https://res.cloudinary.com",
+                "https://misyrpoxvyxwrnhnmeww.supabase.co",
+                "https://randomuser.me",
+              ],
+              "connect-src": [
+                "'self'",
+                "https://misyrpoxvyxwrnhnmeww.supabase.co",
+                "https://api.stripe.com",
+              ],
+            }
+          : false,
     },
   },
 
