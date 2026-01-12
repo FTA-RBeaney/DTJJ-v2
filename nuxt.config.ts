@@ -123,6 +123,7 @@ export default defineNuxtConfig({
           "https://misyrpoxvyxwrnhnmeww.supabase.co",
           "https://randomuser.me",
         ],
+        "connect-src": ["'self'", "https://misyrpoxvyxwrnhnmeww.supabase.co"],
       },
     },
   },

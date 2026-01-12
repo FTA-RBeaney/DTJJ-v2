@@ -18,7 +18,11 @@ export const usePaymentStore = defineStore("payment", () => {
 
   const hostingOption = useLocalStorage(
     "hosting-option",
-    {},
+    {
+      label: "I do not need hosting",
+      value: "no-hosting",
+      icon: "lucide:home",
+    },
     {
       initOnMounted: true,
     }

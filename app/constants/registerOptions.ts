@@ -1,10 +1,10 @@
 export const PASS_TYPES = [
-  { label: "Full pass", value: "full", price: 195, icon: "mdi:star" },
+  { label: "Full pass", value: "full", price: 195, icon: "lucide:star" },
   {
     label: "Party pass",
     value: "party",
     price: 90,
-    icon: "mdi:party-popper",
+    icon: "lucide:party-popper",
   },
 ];
 
