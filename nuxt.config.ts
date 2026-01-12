@@ -115,6 +115,7 @@ export default defineNuxtConfig({
 
   security: {
     headers: {
+      crossOriginEmbedderPolicy: false,
       contentSecurityPolicy:
         process.env.NODE_ENV === "production"
           ? {
