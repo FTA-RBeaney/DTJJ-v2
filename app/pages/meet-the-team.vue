@@ -11,7 +11,7 @@
           <div
             v-for="(member, i) in team"
             :key="member.name"
-            class="col-span-4"
+            class="col-span-6 lg:col-span-4"
           >
             <Motion
               :initial="{ opacity: 0, x: -10 }"

@@ -22,7 +22,7 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
 
     <div class="gap-6">
       <section v-for="(value, index) in values" :key="index">
-        <div class="py-12">
+        <div class="py-6 lg:py-12">
           <UiContainer class="!max-w-3xl">
             <h2 class="mb-6 text-center text-5xl font-semibold">
               {{ value.title }}

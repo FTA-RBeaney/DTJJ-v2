@@ -24,7 +24,93 @@ const isColorPickerOpen = ref(false);
 <template>
   <div class="">
     <div class="flex min-h-screen flex-col bg-[#fdf4ee]">
-      <UiContainer class="navbar z-10 md:mt-10">
+      <!-- Mobile Header -->
+      <UiContainer
+        class="sticky top-0 z-50 flex items-center justify-between border-b bg-[#fdf4ee]/80 py-4 backdrop-blur-md md:hidden"
+      >
+        <NuxtLink to="/" class="block h-10">
+          <img :src="JamLogo" class="h-full object-cover" />
+        </NuxtLink>
+        <UiSheet class="lg:hidden">
+          <UiSheetTrigger as-child>
+            <UiButton variant="ghost" size="icon">
+              <Icon name="lucide:menu" class="h-6 w-6" />
+            </UiButton>
+          </UiSheetTrigger>
+          <UiSheetContent
+            side="right"
+            class="w-[300px] bg-[#fdf4ee] px-6 pt-12"
+          >
+            <template #content>
+              <nav class="flex flex-col gap-6">
+                <div
+                  v-for="(item, index) in nav"
+                  :key="index"
+                  class="space-y-4"
+                >
+                  <template v-if="item.children">
+                    <div class="text-2xl font-semibold tracking-wider">
+                      {{ item.name }}
+                    </div>
+                    <div class="flex flex-col gap-3 pl-4">
+                      <UiSheetClose
+                        as-child
+                        v-for="(child, cIndex) in item.children"
+                        :key="cIndex"
+                      >
+                        <NuxtLink
+                          :to="child.href"
+                          class="text-2xl font-medium hover:underline"
+                        >
+                          {{ child.name }}
+                        </NuxtLink>
+                      </UiSheetClose>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <UiSheetClose as-child>
+                      <NuxtLink
+                        :to="item.href"
+                        class="text-2xl font-medium hover:underline"
+                      >
+                        {{ item.name }}
+                      </NuxtLink>
+                    </UiSheetClose>
+                  </template>
+                </div>
+              </nav>
+            </template>
+            <template #footer>
+              <UiSheetFooter>
+                <div class="space-y-2">
+                  <h4 class="text-lg font-medium">Choose your jam</h4>
+                  <div class="right-0 grid grid-cols-5 gap-2">
+                    <button
+                      v-for="(scheme, key) in COLOR_SCHEMES"
+                      :key="key"
+                      @click="
+                        setColorScheme(key);
+                        isColorPickerOpen = false;
+                      "
+                      :title="scheme.name"
+                      class="h-12 w-10 rounded-lg p-3 transition-all hover:scale-110"
+                      :class="
+                        selectedScheme === key
+                          ? 'ring-foreground ring-2 ring-offset-2'
+                          : ''
+                      "
+                      :style="{ backgroundColor: scheme.hex }"
+                    />
+                  </div>
+                </div>
+              </UiSheetFooter>
+            </template>
+          </UiSheetContent>
+        </UiSheet>
+      </UiContainer>
+
+      <!-- Desktop Navigation -->
+      <UiContainer class="navbar z-10 hidden md:mt-10 md:block">
         <ul class="flex justify-center">
           <Motion
             class="hidden md:mr-10 md:flex"
@@ -88,7 +174,7 @@ const isColorPickerOpen = ref(false);
       </div>
       <AppFooter />
 
-      <div class="top-10 right-10 z-50 lg:fixed">
+      <div class="top-10 right-10 z-[60] hidden md:fixed md:flex">
         <!-- Color Picker Button in Top Right -->
         <UiPopover v-model:open="isColorPickerOpen">
           <UiPopoverTrigger as-child>

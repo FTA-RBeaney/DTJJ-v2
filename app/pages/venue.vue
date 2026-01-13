@@ -28,7 +28,7 @@ const teachers = [
         The venue
       </h1>
     </UiContainer>
-    <UiContainer class="mx-auto mt-10 grid grid-cols-12 p-6">
+    <UiContainer class="mx-auto mt-10 grid-cols-12 p-6 lg:grid">
       <ClientOnly>
         <div class="col-span-4 items-center justify-center gap-6 py-6">
           <Motion
