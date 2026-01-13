@@ -48,7 +48,11 @@ export const usePaymentStore = defineStore("payment", () => {
     console.log(
       `Chosen ticket set to: ${foundTicket.value} at £${foundTicket.price}`
     );
-    chosenTicket.value = foundTicket;
+    chosenTicket.value = {
+      ...foundTicket,
+      tag: foundTicket.tag,
+      quantity: foundTicket.quantity,
+    };
   };
 
   const setPayItForward = (amount: number) => {

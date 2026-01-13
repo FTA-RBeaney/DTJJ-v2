@@ -9,7 +9,7 @@ const seconds = ref(0);
 
 <template>
   <section
-    class="page-hero relative flex min-h-[70vh] w-full items-center justify-center bg-[#fdf4ee] pt-10 pb-10 lg:pt-20 lg:pb-20"
+    class="page-hero relative flex w-full items-center justify-center bg-[#fdf4ee] pt-10 pb-10 lg:pt-20 lg:pb-20"
   >
     <div class="z-20 mx-auto w-full px-4 md:px-8">
       <!-- <Transition name="fade" appear> -->

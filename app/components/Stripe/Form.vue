@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
   PASS_TYPES,
   HOSTING_OPTIONS,
@@ -18,6 +18,10 @@ import { useStripeCard } from "@/composables/useStripeCard";
 
 const isOpen = ref(false);
 const registerProcessing = ref(false);
+const supabase = useSupabaseClient();
+
+// Page loading state
+const pageLoading = ref(true);
 
 // Personal + registration fields
 const firstName = ref("");
@@ -26,6 +30,7 @@ const pronouns = ref("");
 const email = ref("");
 const city = ref("");
 const friendName = ref("");
+const discountCode = ref("");
 const loading = ref(false);
 const success = ref(false);
 
@@ -70,6 +75,52 @@ const {
   cardComplete,
   cardError: stripeCardError,
 } = useStripeCard(cardEl);
+
+// Initialize data and computed props
+let count: number;
+let numberOfSoldTicketsValue: number;
+let pollInterval: ReturnType<typeof setInterval>;
+
+// Move initialization to onMounted
+onMounted(async () => {
+  const fetchTicketCount = async () => {
+    useSonner.info("Fetching tickets", {
+      description: "Keeping your prices up to date",
+    });
+
+    try {
+      const { count: ticketCount } = await supabase
+        .from("registrations")
+        .select("*", { count: "exact", head: true })
+        .in("pass_type", ["full", "full-early", "full-late"]);
+
+      numberOfSoldTickets.value = ticketCount || 0;
+
+      if (chosenTicket?.value?.value !== "party") {
+        setChosenTicket(availableTickets.value[0].value);
+      }
+    } catch (err) {
+      console.error("Error loading ticket data:", err);
+    }
+  };
+
+  // Fetch immediately on mount
+  await fetchTicketCount();
+  pageLoading.value = false;
+
+  // Set initial ticket selection
+  if (availableTickets.value.length > 0) {
+    setChosenTicket(availableTickets.value[0].value || "party");
+  }
+
+  // Poll every 20 seconds
+  pollInterval = setInterval(fetchTicketCount, 20000);
+});
+
+// Cleanup interval on unmount
+onBeforeUnmount(() => {
+  clearInterval(pollInterval);
+});
 
 function validateRequired() {
   if (!chosenTicket.value) {
@@ -123,7 +174,6 @@ const completeRegistration = async () => {
         friend_name: friendName.value || null,
         pass: chosenTicket.value || null,
         pay_it_forward: { ...payItForward.value },
-        volunteering: volunteering.value,
         hosting: hosting.value,
         musician: {
           participates: isMusician.value,
@@ -136,6 +186,8 @@ const completeRegistration = async () => {
         travel_method: optional.value.travelMethod,
         community: optional.value.community,
         submitted_at: new Date().toISOString(),
+        pass_type: chosenTicket.value?.value || null,
+        volunteering: volunteering.value,
       },
     ]);
   email.value = "";
@@ -156,6 +208,14 @@ const completeRegistration = async () => {
     travelMethod: "",
     community: [],
   };
+
+  if (error) {
+    console.error(error);
+    useSonner("There was an error submitting your registration.", {
+      description: "Please try again.",
+    });
+    return;
+  }
   useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 };
 
@@ -189,7 +249,6 @@ async function onSubmit() {
     pass: chosenTicket.value || null,
     payItForward: { ...payItForward.value },
     hosting: hosting.value,
-    volunteering: volunteering.value,
     musician: {
       participates: isMusician.value,
       instrument: musicianInstrument.value,
@@ -199,6 +258,8 @@ async function onSubmit() {
     termsAccepted: termsAccepted.value,
     optional: optional.value,
     submittedAt: new Date().toISOString(),
+    passType: chosenTicket.value?.value || null,
+    volunteering: volunteering.value,
   };
 
   try {
@@ -281,17 +342,88 @@ const totalPrice = computed(() => {
   total = (chosenTicket?.value?.price ?? 0) + (payItForwardAmount.value || 0);
   return total;
 });
+const testSoldTickets = ref(0);
+const numberOfSoldTickets = ref(0);
+
+const regularFullThreshhold = computed(() => {
+  return PASS_TYPES[0].quantity + PASS_TYPES[1].quantity;
+});
+
+const lateFullThreshhold = computed(() => {
+  return (
+    PASS_TYPES[0].quantity + PASS_TYPES[1].quantity + PASS_TYPES[2].quantity
+  );
+});
+
+const activeTicket = computed(() => {
+  if (numberOfSoldTickets.value < PASS_TYPES[0].quantity) {
+    return "full-early";
+  } else if (
+    numberOfSoldTickets.value >= PASS_TYPES[0].quantity &&
+    numberOfSoldTickets.value < regularFullThreshhold.value
+  ) {
+    return "full";
+  } else if (
+    numberOfSoldTickets.value >= regularFullThreshhold.value &&
+    numberOfSoldTickets.value < lateFullThreshhold.value
+  ) {
+    return "full-late";
+  } else {
+    return "sold-out";
+  }
+});
+
+const activeTicketDetails = computed(() => {
+  if (activeTicket.value === "sold-out") {
+    return;
+  }
+  return PASS_TYPES.find((p) => p.value === activeTicket.value);
+});
+
+const availableTickets = computed(() => {
+  // add the activeTicketDetails.value and the party ticket together
+  const partyTicket = PASS_TYPES.find((p) => p.value === "party");
+
+  if (activeTicketDetails.value && partyTicket) {
+    // return the two items in an object
+    return [activeTicketDetails.value, partyTicket];
+  }
+  return [partyTicket];
+});
 </script>
 
 <template>
   <div class="mx-auto w-full max-w-7xl p-6">
-    <form class="space-y-4" @submit.prevent="onSubmit">
+    <!-- Loading overlay -->
+    <div
+      v-if="pageLoading"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div class="flex flex-col items-center gap-4">
+        <UiLoader />
+        <p class="text-white">Loading registration form...</p>
+      </div>
+    </div>
+
+    <form v-if="!pageLoading" class="space-y-4" @submit.prevent="onSubmit">
+      <p class="mx-auto max-w-3xl text-sm">
+        This page will update every so often to make sure that you have the most
+        up to date ticket prices.
+      </p>
       <div class="relative grid items-start gap-4 lg:grid-cols-2">
         <UiCard>
           <UiCardContent class="grid space-y-3">
+            <!-- <UiInput v-model="testSoldTickets" placeholder="Sold" required /> -->
+            <div
+              v-if="numberOfSoldTickets >= lateFullThreshhold"
+              class="text-center text-lg font-semibold text-red-600"
+            >
+              <p>Full passes are sold out.</p>
+              <p>You can still get a Party pass to join the festival!</p>
+            </div>
             <UiRadioGroup orientation="horizontal" class="grid gap-4">
-              <template
-                v-for="(p, i) in PASS_TYPES"
+              <div
+                v-for="(p, i) in availableTickets"
                 :key="`payment-method-${i}`"
               >
                 <div @click="setChosenTicket(p?.value)">
@@ -308,15 +440,15 @@ const totalPrice = computed(() => {
                     "
                   >
                     <Icon class="h-6 w-6" :name="p.icon" />
-                    <span class="text-sm">{{ p?.label }}</span>
+                    <span class="text-sm">{{ p?.label }} </span>
                   </UiLabel>
                 </div>
-              </template>
+              </div>
             </UiRadioGroup>
 
             <!-- Pass selection hint -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+              <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Selected pass
               </UiLabel>
               <div class="text-muted-foreground text-sm">
@@ -330,23 +462,20 @@ const totalPrice = computed(() => {
 
             <!-- Pay it forward -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+              <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Pay it forward
               </UiLabel>
               <p class="text-muted-foreground mb-2 text-sm">
-                With the Social and Sustainable Fund, we are able to give
-                participants who request a discount access to the festival. We
-                also donate to NGOs that fight for our values (sustainability &
-                ecology, community & social, Black American heritage).
+                Through our Pay It Forward Fund, we offer discounted tickets to
+                those who need them. If you’re able, consider adding a little
+                extra to your ticket.
               </p>
               <p class="text-muted-foreground mb-2 text-sm">
-                More information on the Social & Sustainable Fund can be found
-                on our website.
+                Any remaining funds are donated to NGOs supporting London
+                community initiatives and Black heritage. More details are
+                available on our website.
               </p>
-              <p class="text-muted-foreground mb-2 text-sm">
-                If you are in a comfortable financial situation, we invite you
-                to invest in the Fund by topping their ticket with:
-              </p>
+
               <div class="mb-2 items-center gap-2">
                 <UiRadioGroup orientation="horizontal" class="grid gap-4">
                   <template
@@ -386,17 +515,9 @@ const totalPrice = computed(() => {
 
             <!-- Hosting -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+              <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Hosting
               </UiLabel>
-              <!-- <div class="flex flex-col gap-2">
-                <label v-for="option in HOSTING_OPTIONS" :key="option.value">
-                  <input v-model="hosting" type="radio" :value="option.value" />
-                  {{ option.label }}
-                </label>
-              </div> -->
-
-              <!-- todo: add a details section if the user can host -->
 
               <div class="mb-2 items-center gap-2">
                 <UiRadioGroup orientation="horizontal" class="grid gap-4">
@@ -432,7 +553,7 @@ const totalPrice = computed(() => {
 
             <!-- Volunteering -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+              <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Volunteering
               </UiLabel>
               <label class="flex items-center gap-2">
@@ -443,7 +564,7 @@ const totalPrice = computed(() => {
 
             <!-- JazzJam musician -->
             <div>
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+              <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 JazzJam musician
               </UiLabel>
               <label class="flex items-center gap-2">
@@ -451,6 +572,11 @@ const totalPrice = computed(() => {
                 <span>I would like to participate as a musician</span>
               </label>
               <div v-if="isMusician" class="mt-2 grid gap-2">
+                <UiInput
+                  v-model="musicianInstrument"
+                  placeholder="Instrument"
+                  class="block"
+                />
                 <label class="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -459,50 +585,42 @@ const totalPrice = computed(() => {
                   />
                   I will bring my own instrument
                 </label>
-                <UiInput
-                  v-if="bringInstrument"
-                  v-model="musicianInstrument"
-                  placeholder="Instrument"
-                  class="block"
-                />
-              </div>
-            </div>
-
-            <!-- Merch placeholder -->
-            <div>
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
-                Merch (T‑shirt)
-              </UiLabel>
-              <label class="flex items-center gap-2">
-                <input type="checkbox" v-model="merch.want" />
-                <span>I would like merch (T-shirt)</span>
-              </label>
-              <div v-if="merch.want" class="mt-2 flex gap-2">
-                <UiSelect v-model="merch.size">
-                  <UiSelectTrigger placeholder="Select size" />
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="S">Small (S)</UiSelectItem>
-                      <UiSelectItem value="M">Medium (M)</UiSelectItem>
-                      <UiSelectItem value="L">Large (L)</UiSelectItem>
-                      <UiSelectItem value="XL">Extra Large (XL)</UiSelectItem>
-                      <UiSelectItem value="XXL">
-                        Double Extra Large (XXL)
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
               </div>
             </div>
 
             <!-- Optional questions -->
             <div class="mt-4 grid gap-2">
-              <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+              <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Optional
               </UiLabel>
 
+              <p class="text-sm">
+                These questions are optional, but they do help give us a better
+                understanding of who is attending the festival.
+              </p>
+
               <div class="mt-2">
-                <UiLabel class="font-lazy mb-1 block text-2xl font-medium">
+                <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
+                  How are you travelling?
+                </UiLabel>
+                <UiSelect v-model="optional.travelMethod">
+                  <UiSelectTrigger placeholder="Select an option" />
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="option in TRAVEL_OPTIONS"
+                        :key="option.value"
+                        :value="option.value"
+                      >
+                        {{ option.label }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </div>
+
+              <div class="mt-2">
+                <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                   Community engagement (select any)
                 </UiLabel>
                 <div class="grid gap-2">
@@ -540,7 +658,12 @@ const totalPrice = computed(() => {
 
             <UiInput
               v-model="friendName"
-              placeholder="Name of 1 friend to be in same track (optional)"
+              placeholder="Name of 1 friend to be on same team (optional)"
+            />
+
+            <UiInput
+              v-model="discountCode"
+              placeholder="Discount code (if any)"
             />
 
             <!-- Stripe card element -->
@@ -606,20 +729,6 @@ const totalPrice = computed(() => {
                     <span>Donating £{{ payItForward.amount }}</span>
                   </UiTooltipContent>
                 </UiTooltip>
-
-                <!-- Volunteer Badge -->
-                <!-- <UiTooltip v-if="attendee.volunteering">
-                  <UiTooltipTrigger as-child>
-                    <div
-                      class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
-                    >
-                      <Icon name="lucide:hand-heart" class="size-5" />
-                    </div>
-                  </UiTooltipTrigger>
-                  <UiTooltipContent>
-                    <p>Volunteer</p>
-                  </UiTooltipContent>
-                </UiTooltip> -->
 
                 <!-- Host Badge -->
                 <UiTooltip>

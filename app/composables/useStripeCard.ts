@@ -1,4 +1,4 @@
-import { ref, onMounted, onBeforeUnmount, type Ref } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch, type Ref } from "vue";
 import type { Stripe, StripeCardElement } from "@stripe/stripe-js";
 
 export function useStripeCard(cardEl: Ref<HTMLElement | null>) {
@@ -24,14 +24,25 @@ export function useStripeCard(cardEl: Ref<HTMLElement | null>) {
       stripe.value = _stripe as Stripe;
       const elements = (stripe.value as any).elements();
       card.value = elements.create("card", { hidePostalCode: true });
-      if (cardEl.value && card.value) card.value.mount(cardEl.value);
+
+      // Watch for cardEl to become available (it might be hidden by v-if initially)
+      watch(
+        cardEl,
+        (newEl) => {
+          if (newEl && card.value && !ready.value) {
+            card.value.mount(newEl);
+            ready.value = true;
+          }
+        },
+        { immediate: true }
+      );
+
       // track completeness and errors from the Stripe Card element
       const handleChange = (ev: any) => {
         cardComplete.value = !!ev.complete;
         cardError.value = ev.error ? ev.error.message : null;
       };
       (card.value as any).on("change", handleChange);
-      ready.value = true;
     } catch (e: any) {
       error.value = e?.message || String(e);
     }

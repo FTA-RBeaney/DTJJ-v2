@@ -1,10 +1,43 @@
 export const PASS_TYPES = [
-  { label: "Full pass", value: "full", price: 195, icon: "lucide:star" },
+  {
+    label: "Full pass (Early-bird)",
+    value: "full-early",
+    price: 195,
+    icon: "lucide:star",
+    tag: "full",
+    quantity: 50,
+  },
+  {
+    label: "Full pass",
+    value: "full",
+    price: 215,
+    icon: "lucide:ticket",
+    tag: "full",
+    quantity: 100,
+  },
+  {
+    label: "Full pass (Late)",
+    value: "full-late",
+    price: 235,
+    icon: "lucide:ticket",
+    tag: "full",
+    quantity: 50,
+  },
   {
     label: "Party pass",
     value: "party",
     price: 90,
     icon: "lucide:party-popper",
+    tag: "party",
+    quantity: 150,
+  },
+  {
+    label: "Sold out",
+    value: "sold-out",
+    price: 0,
+    icon: "lucide:slash",
+    tag: "sold-out",
+    quantity: 9999,
   },
 ];
 
@@ -64,10 +97,6 @@ export const VOLUNTEERING_OPTIONS = [
 
 export const COMMUNITY_OPTIONS = [
   {
-    value: "hosted",
-    label: "I have hosted dancers",
-  },
-  {
     value: "organiser",
     label: "I organise dance events",
   },
@@ -77,7 +106,7 @@ export const COMMUNITY_OPTIONS = [
   },
   {
     value: "teacher",
-    label: "I teach dance",
+    label: "I teach",
   },
   {
     value: "motivator",
@@ -88,8 +117,16 @@ export const COMMUNITY_OPTIONS = [
     label: "I volunteer at events",
   },
   {
-    value: "communicator",
-    label: "I communicate dance opportunities",
+    value: "regular-classes",
+    label: "I go to dance classes regularly",
+  },
+  {
+    value: "regular-festivals",
+    label: "I attend dance festivals regularly",
+  },
+  {
+    value: "in-a-troupe",
+    label: "I am in a troupe",
   },
 ];
 

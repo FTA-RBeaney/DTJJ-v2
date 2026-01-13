@@ -11,7 +11,7 @@ const nav = [
     children: [
       { name: "Venue", href: "/venue" },
       { name: "Teachers", href: "/teachers" },
-      { name: "Bands", href: "/bands" },
+      // { name: "Bands", href: "/bands" },
     ],
   },
   { name: "Register", href: "/register" },
