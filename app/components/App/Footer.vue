@@ -72,7 +72,8 @@ const footerLinks = [
       </a>
     </div>
     <p class="mt-8 text-center">
-      Copyright © 2026 Downtown Jazz Jam. All rights reservered.
+      Copyright © 2026 Downtown Jazz Jam. All rights reservered. Site design
+      and development by Robert Beaney.
     </p>
   </footer>
 </template>

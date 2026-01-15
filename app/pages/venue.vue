@@ -48,7 +48,9 @@ const teachers = [
                 transition: { duration: 0.5 },
               }"
             >
-              <div class="rounded-lg border-2 border-black bg-white p-8">
+              <div
+                class="mx-auto max-w-md rounded-lg border-2 border-black bg-white p-8"
+              >
                 <img :src="Venue" alt="Venue" class="rounded-lg" />
               </div>
             </Motion>
