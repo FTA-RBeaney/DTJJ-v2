@@ -76,6 +76,11 @@ const handleSubmit = async () => {
 
 <template>
   <div>
+    <UiContainer class="!max-w-3xl">
+      <h1 class="mt-12 mb-0 text-center text-7xl font-bold tracking-wider">
+        Tickets
+      </h1>
+    </UiContainer>
     <UiContainer class="flex min-h-[70vh] flex-col items-center justify-center">
       <CountdownPage />
       <template v-if="!isComplete">

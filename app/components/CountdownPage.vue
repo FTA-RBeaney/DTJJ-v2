@@ -9,76 +9,117 @@ const seconds = ref(0);
 
 <template>
   <section
-    class="page-hero relative flex w-full items-center justify-center bg-[#fdf4ee] pt-10 pb-10 lg:pt-20 lg:pb-20"
+    class="page-hero relative bg-[#fdf4ee] pt-10 pb-10 lg:pt-20 lg:pb-20"
   >
-    <div class="z-20 mx-auto w-full px-4 md:px-8">
-      <!-- <Transition name="fade" appear> -->
-      <div class="mx-auto max-w-[1900px] space-y-5 text-center">
-        <transition-fade>
-          <div
-            class="mx-auto max-w-xl rounded-xl border-2 border-black bg-white p-16"
-          >
-            <p class="font-lazy text-4xl text-black">Tickets go on sale:</p>
-            <div class="mx-auto mb-2 flex max-w-2xl justify-center lg:mb-6">
-              <Countdown
-                :date="new Date('February 01, 2026 00:00:00')"
-                v-slot="{ days, hours, minutes, seconds }"
-              >
-                <div
-                  class="grid auto-cols-max grid-flow-col gap-3 text-center lg:gap-5"
+    <p>
+      We are offering Early Bird prices for the first 50 people to register for
+      full passes, then regular pricing for the next 100 full passes, then late
+      pricing for the last 50 full passes. Party passes will cover parties for
+      all 4 nights and stay the same price throughout. We aim to have individual
+      night tickets available closer to the time once we have a better idea of
+      demand.
+    </p>
+    <p>Pricing:</p>
+    <ul>
+      <li>Early bird full class and party pass: £195 (50 available)</li>
+      <li>Regular: £215 (100 available)</li>
+      <li>Late: £235 (50 available)</li>
+      <li>Full party pass: £90 (all 4 parties)</li>
+    </ul>
+    <p>We will also be offering the following options:</p>
+    <ul>
+      <li>
+        Pay a bit more on the ticket price to cover attendees who aren’t
+        financially able to cover the full ticket price (self selecting on the
+        form)
+      </li>
+      <li>
+        Pay a bit less on the ticket price if it’s a bit of stretch and you
+        can’t volunteer (self selecting on the form)
+      </li>
+      <li>
+        Pay a lot less on the ticket price if you are on benefits (will require
+        you to email us for a quick chat)
+      </li>
+      <li>
+        The option to pay in installments (will require you to email us for a
+        quick chat)
+      </li>
+      <li>
+        The option to share your class pass with a co-parent or carer (will
+        require you to email us for a quick chat)
+      </li>
+    </ul>
+    <div class="mt-24 flex w-full items-center justify-center">
+      <div class="z-20 mx-auto w-full px-4 md:px-8">
+        <!-- <Transition name="fade" appear> -->
+        <div class="mx-auto max-w-[1900px] space-y-5 text-center">
+          <transition-fade>
+            <div
+              class="mx-auto max-w-xl rounded-xl border-2 border-black bg-white p-16"
+            >
+              <p class="font-lazy text-4xl text-black">Tickets go on sale:</p>
+              <div class="mx-auto mb-2 flex max-w-2xl justify-center lg:mb-6">
+                <Countdown
+                  :date="new Date('February 01, 2026 00:00:00')"
+                  v-slot="{ days, hours, minutes, seconds }"
                 >
-                  <div class="flex flex-col items-center p-2 text-black">
-                    <span class="font-mono text-5xl">
-                      <span
-                        :style="`--value: ${days}`"
-                        aria-live="polite"
-                        aria-label="days"
-                        >{{ days }}</span
-                      >
-                    </span>
-                    days
-                  </div>
+                  <div
+                    class="grid auto-cols-max grid-flow-col gap-3 text-center lg:gap-5"
+                  >
+                    <div class="flex flex-col items-center p-2 text-black">
+                      <span class="font-mono text-5xl">
+                        <span
+                          :style="`--value: ${days}`"
+                          aria-live="polite"
+                          aria-label="days"
+                          >{{ days }}</span
+                        >
+                      </span>
+                      days
+                    </div>
 
-                  <div class="flex flex-col items-center p-2 text-black">
-                    <span class="countdown font-mono text-5xl">
-                      <span
-                        :style="`--value: ${hours}`"
-                        aria-live="polite"
-                        aria-label="hours"
-                        >{{ hours }}</span
-                      >
-                    </span>
-                    hours
+                    <div class="flex flex-col items-center p-2 text-black">
+                      <span class="countdown font-mono text-5xl">
+                        <span
+                          :style="`--value: ${hours}`"
+                          aria-live="polite"
+                          aria-label="hours"
+                          >{{ hours }}</span
+                        >
+                      </span>
+                      hours
+                    </div>
+                    <div class="flex flex-col items-center p-2 text-black">
+                      <span class="countdown font-mono text-5xl">
+                        <span
+                          :style="`--value: ${minutes}`"
+                          aria-live="polite"
+                          aria-label="minutes"
+                          >{{ minutes }}</span
+                        >
+                      </span>
+                      min
+                    </div>
+                    <div class="flex flex-col items-center p-2 text-black">
+                      <span class="countdown font-mono text-5xl">
+                        <span
+                          :style="`--value: ${seconds}`"
+                          aria-live="polite"
+                          aria-label="seconds"
+                          >{{ seconds }}</span
+                        >
+                      </span>
+                      sec
+                    </div>
                   </div>
-                  <div class="flex flex-col items-center p-2 text-black">
-                    <span class="countdown font-mono text-5xl">
-                      <span
-                        :style="`--value: ${minutes}`"
-                        aria-live="polite"
-                        aria-label="minutes"
-                        >{{ minutes }}</span
-                      >
-                    </span>
-                    min
-                  </div>
-                  <div class="flex flex-col items-center p-2 text-black">
-                    <span class="countdown font-mono text-5xl">
-                      <span
-                        :style="`--value: ${seconds}`"
-                        aria-live="polite"
-                        aria-label="seconds"
-                        >{{ seconds }}</span
-                      >
-                    </span>
-                    sec
-                  </div>
-                </div>
-              </Countdown>
+                </Countdown>
+              </div>
             </div>
-          </div>
-        </transition-fade>
+          </transition-fade>
+        </div>
+        <!-- </Transition> -->
       </div>
-      <!-- </Transition> -->
     </div>
   </section>
 </template>

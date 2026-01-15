@@ -8,7 +8,7 @@ const nav = [
   { name: "Parties", href: "/parties" },
   { name: "Lessons", href: "/lessons" },
 
-  { name: "Register", href: "/register" },
+  { name: "Tickets", href: "/register" },
 ];
 
 const { selectedScheme, setColorScheme, getSchemeColor } = useColorScheme();

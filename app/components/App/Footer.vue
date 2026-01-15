@@ -22,7 +22,7 @@ const footerLinks = [
     </div>
     <div class="mt-8 flex items-center gap-4">
       <a
-        href="https://fb.me/e/j24Nyn9Gq"
+        href="https://www.facebook.com/profile.php?id=61586140684577"
         target="_blank"
         class="text-primary transition-all duration-300 hover:-translate-y-0.5"
       >

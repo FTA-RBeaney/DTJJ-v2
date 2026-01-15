@@ -113,8 +113,10 @@ const teachers = [
     <UiContainer class="!max-w-5xl">
       <h2 class="text-center text-4xl font-bold">Artists</h2>
       <TeacherGrid />
-      <!-- <JamSplat class="text-primary fill-primary mx-auto h-24 w-auto" />
-      <h2 class="text-center text-4xl font-bold">Music</h2> -->
+      <JamSplat class="text-primary fill-primary mx-auto mt-18 h-24 w-auto" />
+      <h2 class="text-center text-4xl font-bold">Inspirers (TBA)</h2>
+      <JamSplat class="text-primary fill-primary mx-auto mt-18 h-24 w-auto" />
+      <h2 class="text-center text-4xl font-bold">Music (TBA)</h2>
     </UiContainer>
   </div>
 </template>
