@@ -47,7 +47,7 @@ definePageMeta({
                 />
                 <div>
                   <p class="font-medium">{{ feature.name }}</p>
-                  <p class="text-muted-foreground text-sm">
+                  <p class="text-muted-foreground ">
                     {{ feature.description }}
                   </p>
                 </div>

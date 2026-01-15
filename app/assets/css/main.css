@@ -205,7 +205,7 @@
   --sidebar-border: oklch(92% 0.004 286.32deg);
   --sidebar-ring: oklch(60.6% 0.25 292.717deg);
 
-  font-size: clamp(14px, 2vw, 16px);
+  font-size: clamp(14px, 2vw, 14px);
 
   --fc-small-font-size: var(--text-sm);
   --fc-page-bg-color: var(--color-background);

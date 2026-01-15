@@ -39,7 +39,7 @@
             </UiButton>
           </fieldset>
         </form>
-        <p class="mt-8 text-sm">
+        <p class="mt-8">
           <NuxtLink
             class="text-primary font-semibold underline-offset-2 hover:underline"
             to="#"
@@ -47,7 +47,7 @@
             Forgot password?
           </NuxtLink>
         </p>
-        <p class="text-muted-foreground mt-4 text-sm">
+        <p class="text-muted-foreground mt-4">
           Don't have an account?
           <NuxtLink
             class="text-primary font-semibold underline-offset-2 hover:underline"

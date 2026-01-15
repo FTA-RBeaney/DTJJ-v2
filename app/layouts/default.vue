@@ -3,17 +3,11 @@ import JamLogo from "@/assets/img/jam.png";
 import { useColorScheme, COLOR_SCHEMES } from "@/composables/useColorScheme";
 
 const nav = [
-  { name: "About", href: "/about" },
   { name: "Vision", href: "/vision" },
   { name: "Values", href: "/values" },
-  {
-    name: "Details",
-    children: [
-      { name: "Venue", href: "/venue" },
-      { name: "Teachers", href: "/teachers" },
-      // { name: "Bands", href: "/bands" },
-    ],
-  },
+  { name: "Parties", href: "/parties" },
+  { name: "Lessons", href: "/lessons" },
+
   { name: "Register", href: "/register" },
 ];
 
@@ -189,7 +183,7 @@ const isColorPickerOpen = ref(false);
           </UiPopoverTrigger>
           <UiPopoverContent class="w-48">
             <div class="space-y-2">
-              <h4 class="text-sm font-medium">Choose your jam</h4>
+              <h4 class="font-medium">Choose your jam</h4>
               <div class="right-0 grid grid-cols-5 gap-2">
                 <button
                   v-for="(scheme, key) in COLOR_SCHEMES"

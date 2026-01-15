@@ -169,7 +169,7 @@ const fullName = computed(() => {
           </div> -->
           <slot name="back-link">
             <NuxtLink
-              class="mb-5 flex items-center gap-3 text-sm underline-offset-2 hover:underline md:hidden"
+              class="mb-5 flex items-center gap-3 underline-offset-2 hover:underline md:hidden"
               to="#"
             >
               <Icon name="lucide:arrow-left" class="size-4" />
@@ -194,10 +194,7 @@ const fullName = computed(() => {
                   </h1>
                 </slot>
                 <slot name="description">
-                  <p
-                    v-if="email"
-                    class="text-muted-foreground text-sm leading-none"
-                  >
+                  <p v-if="email" class="text-muted-foreground leading-none">
                     {{ email }}
                   </p>
                 </slot>
@@ -396,7 +393,7 @@ const fullName = computed(() => {
                         >
                           <div class="space-y-0.5">
                             <UiLabel>Volunteering</UiLabel>
-                            <p class="text-muted-foreground text-sm">
+                            <p class="text-muted-foreground">
                               Are you interested in volunteering?
                             </p>
                           </div>

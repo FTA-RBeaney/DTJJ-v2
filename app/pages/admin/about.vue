@@ -109,7 +109,7 @@ const savePage = async () => {
           <UiButton
             @click="savePage"
             :disabled="isSaving || !content"
-            class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span v-if="!isSaving">Save Changes</span>
             <span v-else class="flex items-center gap-2">

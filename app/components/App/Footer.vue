@@ -10,7 +10,7 @@ const footerLinks = [
 
 <template>
   <footer
-    class="flex w-full flex-col items-center justify-around py-16 text-sm text-gray-800/70"
+    class="flex w-full flex-col items-center justify-around py-16 text-gray-800/70"
   >
     <UiContainer>
       <UiSeparator class="mb-8" />

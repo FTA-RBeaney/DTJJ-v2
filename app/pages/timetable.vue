@@ -310,7 +310,7 @@ const addEvent = (event: Event) => {
                 <div
                   v-for="(time, index) in timeRange"
                   :key="index"
-                  class="flex h-14 items-start justify-end pr-2 text-sm text-gray-500 dark:text-gray-400"
+                  class="flex h-14 items-start justify-end pr-2 text-gray-500 dark:text-gray-400"
                   :style="{ paddingTop: index === 0 ? '0' : '8px' }"
                 >
                   {{ time }}

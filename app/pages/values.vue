@@ -27,7 +27,7 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
             <h2 class="mb-6 text-center text-5xl font-semibold">
               {{ value.title }}
             </h2>
-            <p v-for="(item, i) in value.content" :key="i" class="mb-4 text-sm">
+            <p v-for="(item, i) in value.content" :key="i" class="mb-4">
               {{ item }}
             </p>
           </UiContainer>

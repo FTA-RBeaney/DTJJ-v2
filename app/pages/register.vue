@@ -79,7 +79,7 @@ const handleSubmit = async () => {
     <UiContainer class="flex min-h-[70vh] flex-col items-center justify-center">
       <CountdownPage />
       <template v-if="!isComplete">
-        <p class="mx-auto mb-4 max-w-2xl text-sm text-black">
+        <p class="mx-auto mb-4 max-w-2xl text-black">
           Sign up now to receive updates and early-bird access.
         </p>
 

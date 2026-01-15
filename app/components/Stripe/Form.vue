@@ -425,7 +425,7 @@ watch(payItForward.value, (newValue) => {
     </div>
 
     <form v-if="!pageLoading" class="space-y-4" @submit.prevent="onSubmit">
-      <p class="mx-auto max-w-3xl text-sm">
+      <p class="mx-auto max-w-3xl">
         This page will update every so often to make sure that you have the most
         up to date ticket prices.
       </p>
@@ -459,7 +459,7 @@ watch(payItForward.value, (newValue) => {
                     "
                   >
                     <Icon class="h-6 w-6" :name="p.icon" />
-                    <span class="text-sm">{{ p?.label }} </span>
+                    <span class="">{{ p?.label }} </span>
                   </UiLabel>
                 </div>
               </div>
@@ -470,7 +470,7 @@ watch(payItForward.value, (newValue) => {
               <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Selected pass
               </UiLabel>
-              <div class="text-muted-foreground text-sm">
+              <div class="text-muted-foreground">
                 {{
                   chosenTicket?.label
                     ? `${chosenTicket?.label} — £${chosenTicket?.price}`
@@ -484,7 +484,7 @@ watch(payItForward.value, (newValue) => {
               <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
                 Pay it forward
               </UiLabel>
-              <p class="text-muted-foreground mb-2 text-sm">
+              <p class="text-muted-foreground mb-2">
                 Through our Pay It Forward Fund, we offer discounted tickets to
                 those who need them. If you’re able, consider adding a little
                 extra to your ticket.
@@ -509,8 +509,8 @@ watch(payItForward.value, (newValue) => {
                         selectedPayItForward === p.id ? 'border-primary' : ''
                       "
                     >
-                      <div class="text-sm">{{ p?.name }}</div>
-                      <div v-if="p.id !== 'other'" class="text-sm">
+                      <div class="">{{ p?.name }}</div>
+                      <div v-if="p.id !== 'other'" class="">
                         £{{ chosenTicket?.price + p?.value }}
                       </div>
                     </UiLabel>
@@ -519,7 +519,7 @@ watch(payItForward.value, (newValue) => {
               </div>
 
               <!-- <div v-if="selectedPayItForward === 'other'" class="flex gap-2">
-                <p class="text-sm">
+                <p class="">
                   Please enter how much you would like to add or how much help
                   you need
                 </p>
@@ -558,7 +558,7 @@ watch(payItForward.value, (newValue) => {
                             : ''
                         "
                       >
-                        <div class="flex items-center text-sm">
+                        <div class="flex items-center">
                           <Icon class="mr-2 h-6 w-6" :name="p.icon" />
                           {{ p?.label }}
                         </div>
@@ -572,7 +572,7 @@ watch(payItForward.value, (newValue) => {
                 v-if="hostingOption.value === 'i-can-host'"
                 class="flex gap-2"
               >
-                <p class="text-sm">How many people can you host?</p>
+                <p class="">How many people can you host?</p>
                 <UiInput
                   v-model.number="numberOfGuests"
                   placeholder="Number of guests"
@@ -624,7 +624,7 @@ watch(payItForward.value, (newValue) => {
                 Optional
               </UiLabel>
 
-              <p class="text-sm">
+              <p class="">
                 These questions are optional, but they do help give us a better
                 understanding of who is attending the festival.
               </p>
@@ -877,7 +877,7 @@ watch(payItForward.value, (newValue) => {
                     style="width: 48px; height: 48px"
                   />
                   <p class="text-lg font-medium">Registration complete!</p>
-                  <p class="text-muted-foreground mt-2 text-center text-sm">
+                  <p class="text-muted-foreground mt-2 text-center">
                     Thank you for registering. We look forward to seeing you at
                     the festival!
                   </p>
