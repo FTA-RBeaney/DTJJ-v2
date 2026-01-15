@@ -72,7 +72,7 @@ const footerLinks = [
       </a>
     </div>
     <p class="mt-8 text-center">
-      Copyright © 2025 Downtown Jazz Jam. All rights reservered.
+      Copyright © 2026 Downtown Jazz Jam. All rights reservered.
     </p>
   </footer>
 </template>

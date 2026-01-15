@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import {
   PASS_TYPES,
   HOSTING_OPTIONS,
@@ -11,10 +11,15 @@ import {
 const paymentStore = usePaymentStore();
 const { setChosenTicket, setRegistrationData, setPayItForward, setHosting } =
   paymentStore;
-const { chosenTicket, payItForwardAmount, hostingOption } =
-  storeToRefs(paymentStore);
+const {
+  chosenTicket,
+  payItForwardAmount,
+  hostingOption,
+  selectedPayItForward,
+} = storeToRefs(paymentStore);
 
 import { useStripeCard } from "@/composables/useStripeCard";
+import { number } from "yup";
 
 const isOpen = ref(false);
 const registerProcessing = ref(false);
@@ -29,10 +34,10 @@ const surname = ref("");
 const pronouns = ref("");
 const email = ref("");
 const city = ref("");
-const friendName = ref("");
 const discountCode = ref("");
 const loading = ref(false);
 const success = ref(false);
+const numberOfGuests = ref(0);
 
 // Hosting
 const hosting = ref("no-need");
@@ -81,29 +86,29 @@ let count: number;
 let numberOfSoldTicketsValue: number;
 let pollInterval: ReturnType<typeof setInterval>;
 
+const fetchTicketCount = async () => {
+  useSonner.info("Fetching tickets", {
+    description: "Keeping your prices up to date",
+  });
+
+  try {
+    const { count: ticketCount } = await supabase
+      .from("registrations")
+      .select("*", { count: "exact", head: true })
+      .in("pass_type", ["full", "full-early", "full-late"]);
+
+    numberOfSoldTickets.value = ticketCount || 0;
+
+    if (chosenTicket?.value?.value !== "party") {
+      setChosenTicket(availableTickets.value[0].value);
+    }
+  } catch (err) {
+    console.error("Error loading ticket data:", err);
+  }
+};
+
 // Move initialization to onMounted
 onMounted(async () => {
-  const fetchTicketCount = async () => {
-    useSonner.info("Fetching tickets", {
-      description: "Keeping your prices up to date",
-    });
-
-    try {
-      const { count: ticketCount } = await supabase
-        .from("registrations")
-        .select("*", { count: "exact", head: true })
-        .in("pass_type", ["full", "full-early", "full-late"]);
-
-      numberOfSoldTickets.value = ticketCount || 0;
-
-      if (chosenTicket?.value?.value !== "party") {
-        setChosenTicket(availableTickets.value[0].value);
-      }
-    } catch (err) {
-      console.error("Error loading ticket data:", err);
-    }
-  };
-
   // Fetch immediately on mount
   await fetchTicketCount();
   pageLoading.value = false;
@@ -114,7 +119,7 @@ onMounted(async () => {
   }
 
   // Poll every 20 seconds
-  pollInterval = setInterval(fetchTicketCount, 20000);
+  pollInterval = setInterval(fetchTicketCount, 200000);
 });
 
 // Cleanup interval on unmount
@@ -158,67 +163,6 @@ const isValidated = computed(() => {
   return validateRequired();
 });
 
-const completeRegistration = async () => {
-  // write the data to Supabse 'registrations' table
-  const { error } = await useSupabaseClient()
-    .from("registrations")
-    .insert([
-      {
-        name: {
-          first: firstName.value,
-          last: surname.value,
-        },
-        pronouns: pronouns.value,
-        email: email.value,
-        city: city.value,
-        friend_name: friendName.value || null,
-        pass: chosenTicket.value || null,
-        pay_it_forward: { ...payItForward.value },
-        hosting: hosting.value,
-        musician: {
-          participates: isMusician.value,
-          instrument: musicianInstrument.value,
-          bringsInstrument: bringInstrument.value,
-        },
-        merch: merch.value,
-        terms_accepted: termsAccepted.value,
-        start_year: optional.value.startYear,
-        travel_method: optional.value.travelMethod,
-        community: optional.value.community,
-        submitted_at: new Date().toISOString(),
-        pass_type: chosenTicket.value?.value || null,
-        volunteering: volunteering.value,
-      },
-    ]);
-  email.value = "";
-  firstName.value = "";
-  surname.value = "";
-  pronouns.value = "";
-  city.value = "";
-  friendName.value = "";
-  hosting.value = "no-need";
-  isMusician.value = false;
-  musicianInstrument.value = "";
-  bringInstrument.value = false;
-  payItForward.value = { type: "none", amount: 0 };
-  merch.value = { want: false, size: "" };
-  termsAccepted.value = false;
-  optional.value = {
-    startYear: null,
-    travelMethod: "",
-    community: [],
-  };
-
-  if (error) {
-    console.error(error);
-    useSonner("There was an error submitting your registration.", {
-      description: "Please try again.",
-    });
-    return;
-  }
-  useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-};
-
 async function onSubmit() {
   isOpen.value = true;
   registerProcessing.value = true;
@@ -245,7 +189,6 @@ async function onSubmit() {
     pronouns: pronouns.value,
     email: email.value,
     city: city.value,
-    friendName: friendName.value || null,
     pass: chosenTicket.value || null,
     payItForward: { ...payItForward.value },
     hosting: hosting.value,
@@ -254,6 +197,7 @@ async function onSubmit() {
       instrument: musicianInstrument.value,
       bringsInstrument: bringInstrument.value,
     },
+    numberOfGuests: numberOfGuests.value,
     merch: merch.value,
     termsAccepted: termsAccepted.value,
     optional: optional.value,
@@ -270,7 +214,9 @@ async function onSubmit() {
     });
 
     const clientSecret = (resp as any).clientSecret;
-    if (!clientSecret) throw new Error("No client secret from server");
+    if (!clientSecret) {
+      throw new Error("No client secret from server");
+    }
 
     const result = await stripe.value!.confirmCardPayment(clientSecret, {
       payment_method: {
@@ -302,36 +248,104 @@ async function onSubmit() {
       error.value = "";
 
       try {
-        await $fetch("/api/send-confirmation", {
-          method: "POST",
-          body: {
+        // Check if user already exists in database
+        const { data: existingUser, error: fetchError } = await supabase
+          .from("registrations")
+          .select("*")
+          .eq("email", email.value)
+          .maybeSingle();
+
+        if (fetchError) {
+          console.error("Error checking existing registration:", fetchError);
+          useSonner.error("Error checking registration status.", {
+            description: "Please contact support.",
+          });
+          throw fetchError;
+        }
+
+        if (existingUser) {
+          useSonner.error("Registration already exists.", {
+            description: "This email is already registered for the event.",
+          });
+          error.value = "User already registered";
+          isOpen.value = false;
+          return;
+        }
+
+        // Insert registration data into Supabase with pending payment status
+        const { error: dbError } = await supabase.from("registrations").insert([
+          {
+            name: {
+              first: firstName.value,
+              last: surname.value,
+            },
+            pronouns: pronouns.value,
             email: email.value,
-            name: firstName.value,
-            passType: chosenTicket.value?.label || "",
+            city: city.value,
+            pass: chosenTicket.value || null,
+            pay_it_forward: { ...payItForward.value },
+            hosting: hosting.value,
+            musician: {
+              participates: isMusician.value,
+              instrument: musicianInstrument.value,
+              bringsInstrument: bringInstrument.value,
+            },
+            merch: merch.value,
+            terms_accepted: termsAccepted.value,
+            start_year: optional.value.startYear,
+            travel_method: optional.value.travelMethod,
+            community: optional.value.community,
+            submitted_at: new Date().toISOString(),
+            pass_type: chosenTicket.value?.value || null,
+            volunteering: volunteering.value,
+            payment_status: "pending", // Will be updated by webhook
+            stripe_payment_id: result.paymentIntent.id,
+            number_of_guests: numberOfGuests.value,
           },
-        });
+        ]);
+
+        if (dbError) {
+          console.error("Database insertion error:", dbError);
+          useSonner.error(
+            "Payment succeeded but failed to save registration.",
+            {
+              description: "Please contact support.",
+            }
+          );
+          throw dbError;
+        }
 
         success.value = true;
-      } catch (err) {
-        error.value = "Failed to send confirmation email";
-      } finally {
-        loading.value = false;
         setTimeout(() => {
+          useConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
           registerProcessing.value = false;
-          completeRegistration();
         }, 2000);
 
         await nextTick();
 
-        // setTimeout(() => {
-        //   navigateTo("/account");
-        // }, 5000);
+        setTimeout(() => {
+          isOpen.value = false;
+        }, 4000);
+      } catch (err) {
+        console.error("Post-payment processing error:", err);
+        useSonner.error("An error occurred after payment.", {
+          description: "Please contact support.",
+        });
+        error.value = "Failed to complete registration";
+      } finally {
+        loading.value = false;
       }
     } else {
       error.value = "Payment not completed";
+      useSonner.error("Payment was not completed successfully.");
     }
   } catch (err: any) {
+    console.error("Payment processing error:", err);
     error.value = err?.message || String(err);
+    useSonner.error("An error occurred during payment processing.", {
+      description: error.value,
+    });
   } finally {
     processing.value = false;
   }
@@ -390,6 +404,11 @@ const availableTickets = computed(() => {
   }
   return [partyTicket];
 });
+
+watch(payItForward.value, (newValue) => {
+  console.log("Pay it forward amount changed:", newValue);
+  setPayItForward(selectedPayItForward.value, newValue.amount);
+});
 </script>
 
 <template>
@@ -411,7 +430,7 @@ const availableTickets = computed(() => {
         up to date ticket prices.
       </p>
       <div class="relative grid items-start gap-4 lg:grid-cols-2">
-        <UiCard>
+        <UiCard class="bg-white text-black">
           <UiCardContent class="grid space-y-3">
             <!-- <UiInput v-model="testSoldTickets" placeholder="Sold" required /> -->
             <div
@@ -434,7 +453,7 @@ const availableTickets = computed(() => {
                   />
                   <UiLabel
                     :for="p.value"
-                    class="border-muted bg-popover peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary flex items-center justify-start gap-3 rounded-md border-2 p-4"
+                    class="border-muted peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary flex items-center justify-start gap-3 rounded-md border-2 bg-white p-4 text-black"
                     :class="
                       chosenTicket?.value === p.value ? 'border-primary' : ''
                     "
@@ -470,47 +489,46 @@ const availableTickets = computed(() => {
                 those who need them. If you’re able, consider adding a little
                 extra to your ticket.
               </p>
-              <p class="text-muted-foreground mb-2 text-sm">
-                Any remaining funds are donated to NGOs supporting London
-                community initiatives and Black heritage. More details are
-                available on our website.
-              </p>
 
               <div class="mb-2 items-center gap-2">
                 <UiRadioGroup orientation="horizontal" class="grid gap-4">
-                  <template
+                  <div
+                    @click="setPayItForward(p.id, p.value)"
                     v-for="(p, i) in PIF_OPTIONS"
                     :key="`payitforward-method-${i}`"
                   >
-                    <div @click="setPayItForward(p?.value)">
-                      <UiRadioGroupItem
-                        :id="p.id"
-                        :value="p.id"
-                        class="peer sr-only"
-                      />
-                      <UiLabel
-                        :for="p.id"
-                        class="border-muted bg-popover peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary block items-center justify-start gap-3 rounded-md border-2 p-4"
-                        :class="
-                          p.value === payItForwardAmount ? 'border-primary' : ''
-                        "
-                      >
-                        <div class="text-sm">{{ p?.name }}</div>
-                        <div class="text-sm">
-                          £{{ chosenTicket?.price + p?.value }}
-                        </div>
-                      </UiLabel>
-                    </div>
-                  </template>
+                    <UiRadioGroupItem
+                      :id="p.id"
+                      :value="p.id"
+                      class="peer sr-only"
+                    />
+                    <UiLabel
+                      :for="p.id"
+                      class="border-muted peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary block items-center justify-start gap-3 rounded-md border-2 bg-white p-4 text-black"
+                      :class="
+                        selectedPayItForward === p.id ? 'border-primary' : ''
+                      "
+                    >
+                      <div class="text-sm">{{ p?.name }}</div>
+                      <div v-if="p.id !== 'other'" class="text-sm">
+                        £{{ chosenTicket?.price + p?.value }}
+                      </div>
+                    </UiLabel>
+                  </div>
                 </UiRadioGroup>
               </div>
-              <div v-if="payItForward.type !== 'none'" class="flex gap-2">
+
+              <!-- <div v-if="selectedPayItForward === 'other'" class="flex gap-2">
+                <p class="text-sm">
+                  Please enter how much you would like to add or how much help
+                  you need
+                </p>
                 <UiInput
                   v-model.number="payItForward.amount"
                   placeholder="Amount (GBP)"
                   type="number"
                 />
-              </div>
+              </div> -->
             </div>
 
             <!-- Hosting -->
@@ -533,7 +551,7 @@ const availableTickets = computed(() => {
                       />
                       <UiLabel
                         :for="p.value"
-                        class="border-muted bg-popover peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary block items-center justify-start gap-3 rounded-md border-2 p-4"
+                        class="border-muted peer-data-[state=checked]:border-primary hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary block items-center justify-start gap-3 rounded-md border-2 bg-white p-4 text-black"
                         :class="
                           p.value === hostingOption.value
                             ? 'border-primary'
@@ -548,6 +566,18 @@ const availableTickets = computed(() => {
                     </div>
                   </template>
                 </UiRadioGroup>
+              </div>
+
+              <div
+                v-if="hostingOption.value === 'i-can-host'"
+                class="flex gap-2"
+              >
+                <p class="text-sm">How many people can you host?</p>
+                <UiInput
+                  v-model.number="numberOfGuests"
+                  placeholder="Number of guests"
+                  type="number"
+                />
               </div>
             </div>
 
@@ -565,7 +595,7 @@ const availableTickets = computed(() => {
             <!-- JazzJam musician -->
             <div>
               <UiLabel class="font-lazy mb-1 block text-3xl font-medium">
-                JazzJam musician
+                Jazz Jam musician
               </UiLabel>
               <label class="flex items-center gap-2">
                 <input type="checkbox" v-model="isMusician" />
@@ -575,7 +605,7 @@ const availableTickets = computed(() => {
                 <UiInput
                   v-model="musicianInstrument"
                   placeholder="Instrument"
-                  class="block"
+                  class="block border-black"
                 />
                 <label class="flex items-center gap-2">
                   <input
@@ -604,7 +634,10 @@ const availableTickets = computed(() => {
                   How are you travelling?
                 </UiLabel>
                 <UiSelect v-model="optional.travelMethod">
-                  <UiSelectTrigger placeholder="Select an option" />
+                  <UiSelectTrigger
+                    placeholder="Select an option"
+                    class="dark:border-black dark:text-black"
+                  />
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
@@ -641,39 +674,71 @@ const availableTickets = computed(() => {
           </UiCardContent>
         </UiCard>
 
-        <UiCard class="sticky top-20 self-start">
+        <UiCard class="sticky top-20 self-start bg-white text-black">
           <UiCardContent class="grid space-y-3">
             <!-- Error -->
             <p v-if="error" class="text-red-500">{{ error }}</p>
 
             <!-- Required personal details -->
             <div class="grid grid-cols-2 gap-3">
-              <UiInput v-model="firstName" placeholder="First name" />
-              <UiInput v-model="surname" placeholder="Surname" />
+              <UiInput
+                v-model="firstName"
+                placeholder="First name"
+                class="dark:border-black"
+              />
+              <UiInput
+                v-model="surname"
+                placeholder="Surname"
+                class="dark:border-black"
+              />
             </div>
 
-            <UiInput v-model="pronouns" placeholder="Pronouns (optional)" />
-            <UiInput v-model="email" placeholder="Email" type="email" />
-            <UiInput v-model="city" placeholder="City, Country" />
-
             <UiInput
-              v-model="friendName"
-              placeholder="Name of 1 friend to be on same team (optional)"
+              v-model="pronouns"
+              placeholder="Pronouns (optional)"
+              class="dark:border-black"
+            />
+            <UiInput
+              v-model="email"
+              placeholder="Email"
+              type="email"
+              class="dark:border-black"
+            />
+            <UiInput
+              v-model="city"
+              placeholder="City, Country"
+              class="dark:border-black"
             />
 
             <UiInput
               v-model="discountCode"
               placeholder="Discount code (if any)"
+              class="dark:border-black"
             />
 
             <!-- Stripe card element -->
-            <div ref="cardEl" class="rounded border p-3"></div>
+            <div
+              ref="cardEl"
+              class="rounded border p-3 dark:border-black"
+            ></div>
 
             <!-- Terms -->
             <div class="mt-8">
               <label class="flex items-center gap-2">
-                <input v-model="termsAccepted" type="checkbox" />
-                <span>I have read and fully accept the Code of Conduct</span>
+                <input
+                  v-model="termsAccepted"
+                  type="checkbox"
+                  class="dark:border-black"
+                />
+                <span
+                  >I have read and fully accept the
+                  <NuxtLink
+                    to="/code-of-conduct"
+                    class="underline"
+                    target="_blank"
+                    >Code of Conduct</NuxtLink
+                  ></span
+                >
               </label>
             </div>
 
@@ -699,7 +764,7 @@ const availableTickets = computed(() => {
                 <UiTooltip v-if="chosenTicket?.label">
                   <UiTooltipTrigger as-child>
                     <div
-                      class="bg-muted text-muted-foreground flex size-8 items-center justify-center rounded-full"
+                      class="flex size-8 items-center justify-center rounded-full bg-white text-black"
                     >
                       <Icon
                         v-if="chosenTicket?.label === 'Full pass'"
@@ -720,7 +785,7 @@ const availableTickets = computed(() => {
                 >
                   <UiTooltipTrigger as-child>
                     <div
-                      class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
+                      class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"
                     >
                       <Icon name="lucide:gift" class="size-5" />
                     </div>
@@ -734,13 +799,13 @@ const availableTickets = computed(() => {
                 <UiTooltip>
                   <UiTooltipTrigger as-child>
                     <div
-                      class="flex size-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                      class="flex size-8 items-center justify-center rounded-full bg-blue-100 text-blue-600"
                     >
                       <Icon :name="hostingOption.icon" class="size-5" />
                     </div>
                   </UiTooltipTrigger>
                   <UiTooltipContent>
-                    <span>Super host!</span>
+                    <span>{{ hostingOption.label }}</span>
                   </UiTooltipContent>
                 </UiTooltip>
 
@@ -748,7 +813,7 @@ const availableTickets = computed(() => {
                 <UiTooltip v-if="volunteering">
                   <UiTooltipTrigger as-child>
                     <div
-                      class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"
+                      class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"
                     >
                       <Icon name="lucide:hand-heart" class="size-5" />
                     </div>
@@ -761,7 +826,7 @@ const availableTickets = computed(() => {
                 <UiTooltip v-if="isMusician && musicianInstrument">
                   <UiTooltipTrigger as-child>
                     <div
-                      class="flex size-8 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+                      class="flex size-8 items-center justify-center rounded-full bg-purple-100 text-purple-600"
                     >
                       <Icon name="lucide:piano" class="size-5" />
                     </div>
@@ -774,7 +839,7 @@ const availableTickets = computed(() => {
                 <UiTooltip v-if="merch.want">
                   <UiTooltipTrigger as-child>
                     <div
-                      class="flex size-8 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400"
+                      class="flex size-8 items-center justify-center rounded-full bg-yellow-100 text-yellow-600"
                     >
                       <Icon name="lucide:shirt" class="size-5" />
                     </div>

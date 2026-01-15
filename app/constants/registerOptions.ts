@@ -132,16 +132,16 @@ export const COMMUNITY_OPTIONS = [
 
 export const PIF_OPTIONS = [
   { id: "none", name: "None", value: 0 },
-  { id: "donate-10", name: "+£10 sustainable top up", value: 10 },
-  { id: "donate-20", name: "+£20 sustainable top up", value: 20 },
-  { id: "donate-30", name: "+£30 sustainable top up", value: 30 },
-  { id: "request-10", name: "£10 discount (request support)", value: -10 },
+  { id: "donate-20", name: "+£20 pay it forward", value: 20 },
+  { id: "donate-30", name: "+£50 pay it forward", value: 50 },
   { id: "request-20", name: "£20 discount (request support)", value: -20 },
-  { id: "request-30", name: "£30 discount (request support)", value: -30 },
+  { id: "request-50", name: "£50 discount (request support)", value: -50 },
+  { id: "other", name: "Other amount", value: 0 },
 ];
 
 export const TRAVEL_OPTIONS = [
   { label: "I travel over land", value: "by-land" },
   { label: "Normally I'd fly but coming by land", value: "would-normally-fly" },
   { label: "I will come by plane", value: "by-plane" },
+  { label: "I'm a Londoner, so by tube", value: "by-tube" },
 ];

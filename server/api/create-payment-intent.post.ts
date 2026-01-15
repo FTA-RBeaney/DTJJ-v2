@@ -18,10 +18,35 @@ export default defineEventHandler(async (event) => {
 
   const stripe = new Stripe(secret);
 
+  // Create a minimal metadata object to stay within Stripe's 500 character limit
+  const minimalMetadata: Record<string, string> = body.registration
+    ? {
+        email: body.registration.email || "",
+        passType: body.registration.passType || "",
+        name: `${body.registration.name.first || ""} ${body.registration.name.last || ""}`.trim(),
+        pronouns: body.registration.pronouns || "",
+        city: body.registration.city || "",
+        pass: JSON.stringify(body.registration.pass || {}),
+        payItForward: JSON.stringify(body.registration.payItForward || {}),
+        hosting: JSON.stringify(body.registration.hosting || {}),
+        musician: JSON.stringify(body.registration.musician || {}),
+        numberOfGuests: body.registration.numberOfGuests,
+        merch: JSON.stringify(body.registration.merch || {}),
+        termsAccepted: body.registration.termsAccepted
+          ? body.registration.termsAccepted.toString()
+          : "",
+        optional: JSON.stringify(body.registration.optional || {}),
+        volunteering: body.registration.volunteering
+          ? body.registration.volunteering.toString()
+          : "",
+      }
+    : {};
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
     currency,
     automatic_payment_methods: { enabled: true },
+    metadata: minimalMetadata,
   });
 
   return { clientSecret: paymentIntent.client_secret };

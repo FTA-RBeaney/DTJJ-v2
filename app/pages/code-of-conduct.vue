@@ -37,7 +37,7 @@
       </p>
       <p><strong>Safe(r) Space Team</strong></p>
       <p>
-        For the Downtown Jazz Jam 2025 we have a Safe(r) Space Team. You can
+        For the Downtown Jazz Jam 2026 we have a Safe(r) Space Team. You can
         contact any staff member, but these people are carefully selected to
         address any safe space policy issue, feedback or report. We’ll
         communicate our Safer Space team before the festival starts.

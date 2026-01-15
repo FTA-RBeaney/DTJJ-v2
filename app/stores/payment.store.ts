@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { PASS_TYPES } from "@/constants/registerOptions";
+import { PASS_TYPES, PIF_OPTIONS } from "@/constants/registerOptions";
 
 export const usePaymentStore = defineStore("payment", () => {
   const exampleValue = ref("example");
@@ -11,6 +11,14 @@ export const usePaymentStore = defineStore("payment", () => {
   const chosenTicket = useLocalStorage("chosen-ticket", ticketTypes[0], {
     initOnMounted: true,
   });
+
+  const selectedPayItForward = useLocalStorage(
+    "selected-pay-it-forward",
+    PIF_OPTIONS[0].id,
+    {
+      initOnMounted: true,
+    }
+  );
 
   const payItForwardAmount = useLocalStorage("pay-it-forward-amount", 0, {
     initOnMounted: true,
@@ -55,12 +63,17 @@ export const usePaymentStore = defineStore("payment", () => {
     };
   };
 
-  const setPayItForward = (amount: number) => {
+  const setPayItForward = (id: string, value: number) => {
+    const item = PIF_OPTIONS.find((p) => p.id === id);
+    if (!item) {
+      throw new Error(`Pay-it-forward option "${id}" not found`);
+    }
     registrationData.value = {
       ...registrationData.value,
-      payItForward: amount,
+      payItForward: value,
     };
-    payItForwardAmount.value = amount;
+    selectedPayItForward.value = id;
+    payItForwardAmount.value = value;
   };
 
   const setHosting = (option: object) => {
@@ -80,6 +93,7 @@ export const usePaymentStore = defineStore("payment", () => {
     chosenTicket,
     exampleValue,
     payItForwardAmount,
+    selectedPayItForward,
     setChosenTicket,
     setPayItForward,
     ticketTypes,
