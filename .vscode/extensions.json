@@ -5,6 +5,7 @@
     "esbenp.prettier-vscode",
     "antfu.iconify",
     "formulahendry.auto-close-tag",
-    "formulahendry.auto-rename-tag"
+    "formulahendry.auto-rename-tag",
+    "kilocode.kilo-code"
   ]
 }

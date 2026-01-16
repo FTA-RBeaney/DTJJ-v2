@@ -40,7 +40,7 @@ export const values = [
     ],
   },
   {
-    title: "Top Line Code of Conduct",
+    title: "Top Line Code of Conduct: Don't be a dick",
     content: [
       "We want this event to be a safe and joyful space for everyone. That means leaving egos at the door and treating each other with respect and kindness. Racism, transphobia, homophobia, xenophobia, fatphobia, body shaming, ableism, any discrimination or making someone feel shit to make yourself feel better will not be tolerated.",
       "We ask everyone to recognise their privilege, not as the hardships they’ve faced, but as the barriers they haven’t had to experience. It doesn't matter how long you've been dancing or how many competitions you've made finals in - please leave your ego at the door.",
