@@ -1,22 +1,62 @@
 <script setup>
 import Venue from "@/assets/img/venue/venue.png";
-import Skye from "@/assets/img/teachers/skye.png";
-import Trisha from "@/assets/img/teachers/trisha.png";
+import StJohns from "@/assets/img/venue/st-johns.png";
+import PaxLodge from "@/assets/img/venue/pax-lodge.jpg";
+import HaverstockSchool from "@/assets/img/venue/haverstock-school.jpg";
 
-const teachers = [
+const venues = [
   {
-    name: "Skye Reynolds",
-    img: Skye,
-    bio: `Skye Reynolds is a seasoned educator and performer with over a decade of experience in the music industry. Specializing in guitar and vocal techniques, Skye has taught students of all ages and skill levels, helping them unlock their full potential. Her dynamic teaching style combines technical proficiency with creative expression, making learning both effective and enjoyable.
-
-      Beyond teaching, Skye is an accomplished performer, having toured nationally and released several albums. Her passion for music and education shines through in every lesson, inspiring students to pursue their musical dreams with confidence and enthusiasm.`,
+    id: "st-johns",
+    day: "Saturday",
+    name: "St John's Church",
+    image: StJohns,
+    address: {
+      line1: "St John's, Downshire Hill",
+      line2: "Hampstead",
+      city: "London",
+      postcode: "NW3 1NU",
+    },
+    description:
+      "St John's Church is a stunning space, only 15 mins from our evening venue, right next to a road with cute cafes and Hampstead Heath.",
+    tubes: [
+      { station: "Hampstead Heath", lines: "Mildmay and Suffragette lines" },
+      { station: "Belsize Park", lines: "Northern line" },
+      { station: "Hampstead", lines: "Northern line" },
+    ],
   },
   {
-    name: "Trisha Smith",
-    img: Trisha,
-    bio: `Trisha Smith is a dedicated music educator known for her innovative approach to teaching piano and music theory. With a background in classical and contemporary music, Trisha brings a wealth of knowledge and experience to her students. She has a talent for breaking down complex concepts into manageable lessons, ensuring that students not only learn but also enjoy the process.
-
-      Trisha has been involved in various community music programs and has a strong commitment to fostering a love for music in her students. Her lessons are tailored to individual needs, focusing on building skills while nurturing creativity and self-expression.`,
+    id: "pax-lodge",
+    day: "Saturday",
+    name: "Pax Lodge",
+    image: PaxLodge,
+    address: {
+      line1: "12C Lyndhurst Rd",
+      city: "London",
+      postcode: "NW3 5PQ",
+    },
+    description:
+      "Only 15 mins from our evening venue, Pax Lodge does not only offer a space for our classes, but is also an affordable option for your accommodation, should you require it.",
+    tubes: [
+      { station: "Hampstead Heath", lines: "Mildmay and Suffragette lines" },
+      { station: "Belsize Park", lines: "Northern line" },
+    ],
+  },
+  {
+    id: "haverstock",
+    day: "Sunday & Monday",
+    name: "Haverstock School",
+    image: HaverstockSchool,
+    address: {
+      line1: "24 Haverstock Hill",
+      line2: "Chalk Farm",
+      city: "London",
+      postcode: "NW3 2BQ",
+    },
+    description: "",
+    tubes: [
+      { station: "Chalk Farm", lines: "Northern Line" },
+      { station: "Kentish Town West", lines: "Mildmay Line" },
+    ],
   },
 ];
 </script>
@@ -24,10 +64,14 @@ const teachers = [
 <template>
   <div>
     <UiContainer class="!max-w-3xl text-center">
-      <h1 class="mt-12 mb-0 text-center text-7xl font-bold tracking-wider">
-        The venue
+      <h1 class="my-16 text-center text-7xl font-bold tracking-wider">
+        The venues
       </h1>
+      <p class="mb-8 text-lg">
+        This year's Downtown Jazz Jam will be held at the following venues:
+      </p>
     </UiContainer>
+
     <UiContainer class="mx-auto mt-10 grid-cols-12 p-6 lg:grid">
       <ClientOnly>
         <div class="col-span-4 items-center justify-center gap-6 py-6">
@@ -57,9 +101,9 @@ const teachers = [
           </Motion>
         </div>
       </ClientOnly>
-      <div class="col-span-6 items-center justify-center gap-6 p-6">
+      <div class="col-span-6 items-center justify-center gap-6 px-10 py-6">
         <div class="text-left">
-          <h2 class="text-2xl font-bold">The Venue</h2>
+          <h2 class="text-2xl font-bold">Evening Party Venue</h2>
           <p>
             This year's Downtown Jazz Jam will be held at the following venue:
           </p>
@@ -83,5 +127,87 @@ const teachers = [
         </div>
       </div>
     </UiContainer>
+
+    <UiContainer class="mx-auto p-6">
+      <div class="space-y-8">
+        <h2 class="text-2xl font-bold">Class Venues</h2>
+        <ClientOnly>
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              v-for="(venue, index) in venues"
+              :key="venue.id"
+              class="rounded-lg border-2 border-black bg-white p-6"
+            >
+              <Motion
+                :initial="{ opacity: 0, y: 20 }"
+                :animate="{ opacity: 1, y: 0 }"
+                :transition="{
+                  delay: index * 0.15,
+                  type: 'spring',
+                  stiffness: 200,
+                  damping: 25,
+                }"
+              >
+                <div class="grid flex-col gap-6 md:flex-row md:gap-8">
+                  <div>
+                    <img
+                      :src="venue.image"
+                      :alt="venue.name"
+                      class="aspect-video h-48 w-full rounded-lg object-cover md:h-full"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <span
+                      class="mb-2 inline-block rounded-full bg-black px-3 py-1 text-sm font-semibold text-white"
+                    >
+                      {{ venue.day }}
+                    </span>
+                    <h2 class="mt-2 text-2xl font-bold">{{ venue.name }}</h2>
+
+                    <ul class="mt-3 list-none space-y-1 text-gray-700">
+                      <li>{{ venue.address.line1 }}</li>
+                      <li v-if="venue.address.line2">
+                        {{ venue.address.line2 }}
+                      </li>
+                      <li>{{ venue.address.city }}</li>
+                      <li class="font-semibold">
+                        {{ venue.address.postcode }}
+                      </li>
+                    </ul>
+
+                    <p v-if="venue.description" class="mt-4 text-gray-600">
+                      {{ venue.description }}
+                    </p>
+
+                    <div class="mt-4">
+                      <p class="font-semibold">The closest tubes are:</p>
+                      <ul class="mt-1 list-disc">
+                        <li v-for="tube in venue.tubes" :key="tube.station">
+                          {{ tube.station }} ({{ tube.lines }})
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </Motion>
+            </div>
+          </div>
+        </ClientOnly>
+      </div>
+    </UiContainer>
   </div>
 </template>
+
+<style scoped>
+.list-none {
+  padding: 0;
+  margin: 0;
+
+  li {
+    list-style: none;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding: 0;
+  }
+}
+</style>

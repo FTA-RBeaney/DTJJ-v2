@@ -7,7 +7,7 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
 <template>
   <div>
     <UiContainer class="!max-w-3xl">
-      <h1 class="mt-12 mb-0 text-center text-7xl font-bold tracking-wider">
+      <h1 class="my-16 text-center text-7xl font-bold tracking-wider">
         Values
       </h1>
     </UiContainer>
@@ -23,7 +23,7 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
     <div class="gap-6">
       <section v-for="(value, index) in values" :key="index">
         <div class="py-6 lg:py-12">
-          <UiContainer class="!max-w-3xl">
+          <UiContainer class="!max-w-4xl">
             <h2 class="mb-6 text-center text-5xl font-semibold">
               {{ value.title }}
             </h2>

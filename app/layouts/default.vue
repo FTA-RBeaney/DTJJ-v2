@@ -5,9 +5,8 @@ import { useColorScheme, COLOR_SCHEMES } from "@/composables/useColorScheme";
 const nav = [
   { name: "Vision", href: "/vision" },
   { name: "Values", href: "/values" },
-  { name: "Parties", href: "/parties" },
+  { name: "Venues", href: "/venue" },
   { name: "Teachers", href: "/teachers" },
-
   { name: "Tickets", href: "/register" },
 ];
 

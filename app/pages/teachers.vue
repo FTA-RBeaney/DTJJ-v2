@@ -4,16 +4,12 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
 
 <template>
   <div>
-    <UiContainer class="!max-w-6xl text-center">
+    <!-- <UiContainer class="!max-w-6xl text-center">
       <h1 class="my-12 text-center text-7xl font-bold tracking-wider">
         Lessons
       </h1>
-      <!-- <p>
-        This year we have prioritised teachers from London to celebrate the
-        people from our scene who help educate and inspire us.
-      </p> -->
 
-      <p>
+      <p class="mt-20">
         Katherine Dunham, John Bubbles, Josephine Baker, Bill Bojangles Robinson
       </p>
       <p>
@@ -33,11 +29,13 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
         follows) - so we ask you to be generous with your classmates who may not
         have experience of this approach.
       </p>
-    </UiContainer>
-    <JamSplat class="text-primary fill-primary mx-auto mt-20 h-24 w-auto" />
+    </UiContainer> -->
+    <!-- <JamSplat class="text-primary fill-primary mx-auto mt-20 h-24 w-auto" /> -->
     <UiContainer>
       <div class="mx-auto mt-10 pb-6">
-        <h2 class="mt-12 text-center text-6xl font-bold">Your teachers</h2>
+        <h1 class="my-16 text-center text-7xl font-bold tracking-wider">
+          Your teachers
+        </h1>
         <TeacherList />
         <!-- <TeacherGrid /> -->
       </div>
