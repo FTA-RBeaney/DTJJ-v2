@@ -414,6 +414,7 @@ watch(payItForward.value, (newValue) => {
 <template>
   <div class="mx-auto w-full max-w-7xl p-6">
     <!-- Loading overlay -->
+    <RegistrationSkeleton v-if="pageLoading" />
     <div
       v-if="pageLoading"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"

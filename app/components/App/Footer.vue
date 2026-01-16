@@ -4,7 +4,7 @@ const footerLinks = [
   { name: "About", href: "/about" },
   { name: "Meet the team", href: "/meet-the-team" },
   { name: "Values", href: "/values" },
-  { name: "Code of conduct", href: "/code-of-conduct" },
+  // { name: "Code of conduct", href: "/code-of-conduct" },
 ];
 </script>
 

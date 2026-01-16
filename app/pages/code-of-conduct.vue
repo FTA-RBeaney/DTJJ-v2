@@ -152,11 +152,8 @@
       </ul>
       <p>&nbsp;</p>
       <p>
-        This document was based on different
-        <a href="http://www.berlinbalboaweekend.de/code-of-conduct/"
-          >codes of conduct</a
-        >
-        (<a href="http://www.berlinbalboaweekend.de/code-of-conduct/"
+        This document was based on different codes of conduct (<a
+          href="http://www.berlinbalboaweekend.de/code-of-conduct/"
           >Berlin Balboa</a
         >,
         <a
@@ -167,8 +164,7 @@
         >, Retro Weekend,
         <a href="https://outofthetoolbox.be/" target="_blank" rel="noopener"
           >Out of the Toolbox</a
-        >). Feel free to use this as it is or in a modified form, for your own
-        dance event. Just credit 😉
+        >). We are grateful for their work and inspiration.
       </p>
     </div>
   </UiContainer>
