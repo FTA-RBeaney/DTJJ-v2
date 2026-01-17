@@ -7,6 +7,9 @@ import Schedule from "@/assets/img/schedule.jpeg";
     <h1 class="mb-10 text-center text-5xl font-bold tracking-wider">
       Schedule
     </h1>
+    <p class="text-center">
+      (Please note: this is currently a rough schedule and is subject to change)
+    </p>
     <img
       :src="Schedule"
       alt="Downtown Jazz Jam Schedule"
