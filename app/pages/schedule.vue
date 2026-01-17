@@ -13,7 +13,7 @@ import Schedule from "@/assets/img/schedule.jpeg";
     <img
       :src="Schedule"
       alt="Downtown Jazz Jam Schedule"
-      class="mx-auto max-w-4xl rounded-lg border-4 border-black shadow-lg"
+      class="mx-auto w-full max-w-4xl rounded-lg border-4 border-black shadow-lg"
     />
   </UiContainer>
 </template>
