@@ -34,7 +34,17 @@ import JamSplat from "@/assets/img/jam-splat-trans.svg";
         have experience of this approach.
       </p>
     </UiContainer>
-    <JamSplat class="text-primary fill-primary mx-auto mt-20 h-24 w-auto" />
+    <Motion
+      :whileInView="{ opacity: 1, scale: 1 }"
+      :inViewOptions="{ once: true }"
+      :initial="{ opacity: 0, scale: 0 }"
+      :transition="{
+        duration: 0.4,
+        scale: { type: 'spring', visualDuration: 0.4, bounce: 0.5 },
+      }"
+    >
+      <JamSplat class="text-primary fill-primary mx-auto mt-20 h-24 w-auto" />
+    </Motion>
     <UiContainer>
       <div class="mx-auto mt-10 pb-6">
         <h2 class="mt-12 text-center text-6xl font-bold">Your teachers</h2>

@@ -57,17 +57,28 @@ const teachers = [
     <div class="grid gap-16 lg:gap-24">
       <div v-for="(member, i) in teachers" :key="member.name">
         <div
-          class="items-center justify-center gap-12 lg:flex"
+          class="items-center justify-center gap-12 md:flex"
           :class="i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'"
         >
-          <div class="lg:w-3/12">
-            <img
-              :src="member.img"
-              :alt="member.name"
-              class="mb-10 w-full rounded-lg"
-            />
+          <div class="md:w-3/12">
+            <Motion
+              :initial="{ opacity: 0, x: i % 2 === 0 ? -10 : 10 }"
+              :inViewOptions="{ once: true }"
+              :whileInView="{
+                x: [i % 2 === 0 ? -50 : 50, -6, 6, -4, 4, 0],
+                rotate: [0, -2, 2, -1, 1, 0],
+                transition: { duration: 0.75 },
+                opacity: 1,
+              }"
+            >
+              <img
+                :src="member.img"
+                :alt="member.name"
+                class="mb-10 w-full rounded-lg"
+              />
+            </Motion>
           </div>
-          <div class="lg:w-8/12">
+          <div class="md:w-8/12">
             <h3 class="mt-4 text-center text-xl font-bold">
               {{ member.name }}
             </h3>

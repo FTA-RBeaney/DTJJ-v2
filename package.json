@@ -33,6 +33,7 @@
     "@tiptap/vue-3": "^3.14.0",
     "@vee-validate/nuxt": "^4.15.1",
     "@vee-validate/yup": "^4.15.1",
+    "@vueuse/motion": "^3.0.3",
     "@vueuse/nuxt": "^13.9.0",
     "canvas-confetti": "^1.9.4",
     "dayjs": "^1.11.19",

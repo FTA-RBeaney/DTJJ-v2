@@ -1,5 +1,5 @@
 <script setup>
-import Venue from "@/assets/img/venue/venue.png";
+import Venue from "@/assets/img/venue/venue.webp";
 </script>
 
 <template>

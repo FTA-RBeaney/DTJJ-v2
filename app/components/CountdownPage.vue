@@ -9,7 +9,7 @@ const seconds = ref(0);
 
 <template>
   <section
-    class="page-hero relative bg-[#fdf4ee] pt-10 pb-10 lg:pt-20 lg:pb-20"
+    class="page-hero relative bg-[#fdf4ee] px-4 pt-10 pb-10 lg:pt-20 lg:pb-20"
   >
     <p>
       We are offering Early Bird prices for the first 50 people to register for
@@ -50,13 +50,13 @@ const seconds = ref(0);
         require you to email us for a quick chat)
       </li>
     </ul>
-    <div class="mt-24 flex w-full items-center justify-center">
-      <div class="z-20 mx-auto w-full px-4 md:px-8">
+    <div class="mt-16 flex w-full items-center justify-center">
+      <div class="z-20 mx-auto w-[320px] sm:w-[600px]">
         <!-- <Transition name="fade" appear> -->
         <div class="mx-auto max-w-[1900px] space-y-5 text-center">
           <transition-fade>
             <div
-              class="mx-auto max-w-xl rounded-xl border-2 border-black bg-white p-16"
+              class="mx-auto max-w-xl rounded-xl border-2 border-black bg-white p-8 md:p-16"
             >
               <p class="font-lazy text-4xl text-black">Tickets go on sale:</p>
               <div class="mx-auto mb-2 flex max-w-2xl justify-center lg:mb-6">
@@ -161,7 +161,7 @@ h2 {
 .font-mono {
   font-family: "Garet-Heavy", sans-serif;
   color: black;
-  font-size: 3rem;
+  font-size: 2.4rem;
 
   @media screen and (min-width: 640px) {
     font-size: 5rem;

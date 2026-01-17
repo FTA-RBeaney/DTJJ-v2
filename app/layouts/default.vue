@@ -34,15 +34,34 @@ const isColorPickerOpen = ref(false);
             side="right"
             class="w-[300px] bg-[#fdf4ee] px-6 pt-12"
           >
+            <template #header>
+              <UiSheetHeader>
+                <UiSheetTitle
+                  class="text-center text-4xl font-bold tracking-wider"
+                >
+                  Menu
+                </UiSheetTitle>
+
+                <UiSheetClose as-child>
+                  <UiButton
+                    variant="ghost"
+                    size="icon"
+                    class="absolute top-4 right-4"
+                  >
+                    <Icon name="lucide:x" class="h-6 w-6" />
+                  </UiButton>
+                </UiSheetClose>
+              </UiSheetHeader>
+            </template>
             <template #content>
-              <nav class="flex flex-col gap-6">
+              <nav class="flex flex-col gap-4 text-center">
                 <div
                   v-for="(item, index) in nav"
                   :key="index"
                   class="space-y-4"
                 >
                   <template v-if="item.children">
-                    <div class="text-2xl font-semibold tracking-wider">
+                    <div class="font-semibold tracking-wider">
                       {{ item.name }}
                     </div>
                     <div class="flex flex-col gap-3 pl-4">
@@ -53,7 +72,7 @@ const isColorPickerOpen = ref(false);
                       >
                         <NuxtLink
                           :to="child.href"
-                          class="text-2xl font-medium hover:underline"
+                          class="font-medium hover:underline"
                         >
                           {{ child.name }}
                         </NuxtLink>
@@ -64,7 +83,7 @@ const isColorPickerOpen = ref(false);
                     <UiSheetClose as-child>
                       <NuxtLink
                         :to="item.href"
-                        class="text-2xl font-medium hover:underline"
+                        class="font-medium hover:underline"
                       >
                         {{ item.name }}
                       </NuxtLink>
