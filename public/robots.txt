@@ -1,9 +1,0 @@
-# robots.txt for downtownjazzjam.uk
-User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: https://downtownjazzjam.uk/sitemap.xml
-
-# Crawl-delay (optional, for polite crawling)
-Crawl-delay: 1

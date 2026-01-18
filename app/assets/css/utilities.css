@@ -1,8 +1,0 @@
-@utility scroll-touch {
-  -webkit-overflow-scrolling: "touch";
-}
-
-@utility container {
-  padding-inline: 2rem;
-  margin-inline: auto;
-}
