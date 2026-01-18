@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import JamLogo from "@/assets/img/jam.png";
+import JamLogo from "@/assets/img/jam-300.png";
 </script>
 
 <template>

@@ -112,6 +112,8 @@ export default defineNuxtConfig({
       stripePublishableKey: process.env.STRIPE_PUBLIC_KEY,
       motion: {},
     },
+    volunteerPartyDiscount: process.env.VOLUNTEER_PARTY_DISCOUNT,
+    volunteerFullDiscount: process.env.VOLUNTEER_FULL_DISCOUNT,
   },
 
   security: {

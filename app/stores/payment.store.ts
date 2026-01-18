@@ -3,7 +3,7 @@ import { PASS_TYPES, PIF_OPTIONS } from "@/constants/registerOptions";
 
 export const usePaymentStore = defineStore("payment", () => {
   const exampleValue = ref("example");
-
+  const numberOfGuests = ref(0);
   const ticketTypes = PASS_TYPES;
 
   // Persist and hydrate from localStorage after mount to survive reloads.

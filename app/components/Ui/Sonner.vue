@@ -1,5 +1,6 @@
 <template>
   <Toaster
+    richColors
     class="toaster group"
     :visible-toasts="5"
     close-button

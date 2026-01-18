@@ -39,6 +39,22 @@ export const PASS_TYPES = [
     tag: "sold-out",
     quantity: 9999,
   },
+  {
+    label: "Volunteer (Party pass)",
+    value: "volunteer-party",
+    price: 0,
+    icon: "lucide:hand-heart",
+    tag: "volunteer-party",
+    quantity: 30,
+  },
+  {
+    label: "Volunteer (Full pass)",
+    value: "volunteer-full",
+    price: 0,
+    icon: "lucide:hand-heart",
+    tag: "volunteer-full",
+    quantity: 30,
+  },
 ];
 
 export const HOSTING_OPTIONS = [
